@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SJA Grand Alumni Homecoming 2026 | Denim & Diamonds</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: '#000435',
+                        silver: '#E2E8F0',
+                        gold: '#D4AF37',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Playfair Display', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .selection-gold::selection { background-color: rgba(212, 175, 55, 0.3); }
+        .glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); }
+        .hero-gradient { background: linear-gradient(to top, white, transparent); }
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-white text-navy font-sans antialiased selection-gold">
+
+    <!-- Hero Section -->
+    <header class="relative min-h-[85vh] flex flex-col items-center justify-center text-center px-6 overflow-hidden">
+        <!-- Background Overlay -->
+        <div class="absolute inset-0 z-0">
+            <div class="absolute inset-0 bg-[#000435]/80 z-10"></div>
+            <img 
+                src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&q=80&w=2070" 
+                alt="Celebration background" 
+                class="w-full h-full object-cover"
+            >
+        </div>
+
+        <!-- Content -->
+        <div class="relative z-20 max-w-4xl mx-auto fade-in">
+            <!-- Logo Placeholder -->
+            <div class="mb-8 flex justify-center">
+                <div class="w-24 h-24 glass rounded-full flex items-center justify-center border border-white/20 shadow-xl">
+                    <span class="text-white font-display text-2xl font-bold tracking-tighter">SJA</span>
+                </div>
+            </div>
+
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-display text-white font-bold mb-4 tracking-tight leading-tight">
+                St. Joseph’s Academy <br />
+                <span class="text-slate-200/90">Grand Alumni Homecoming 2026</span>
+            </h1>
+            
+            <div class="flex items-center justify-center gap-4 mb-8">
+                <div class="h-px w-12 bg-[#D4AF37]/50"></div>
+                <h2 class="text-xl md:text-3xl font-display italic text-[#D4AF37] tracking-widest uppercase">
+                    Denim & Diamonds
+                </h2>
+                <div class="h-px w-12 bg-[#D4AF37]/50"></div>
+            </div>
+
+            <p class="text-lg md:text-xl text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed font-light">
+                A night of elegance and nostalgia. We invite our alumni, families, and supporters 
+                to return home and celebrate the enduring spirit of St. Joseph’s Academy.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a 
+                    href="#" 
+                    class="px-8 py-4 bg-[#D4AF37] text-[#000435] font-semibold rounded-full hover:bg-white transition-all duration-300 shadow-lg hover:shadow-gold/20 flex items-center gap-2 group"
+                >
+                    Register Now
+                    <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                </a>
+                <div class="flex items-center gap-6 text-white/80 text-sm font-medium">
+                    <span class="flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4 text-gold"></i> 2026</span>
+                    <span class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-gold"></i> Mandaue City</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subtle Sparkle Effect -->
+        <div class="absolute bottom-0 left-0 w-full h-32 hero-gradient z-20"></div>
+    </header>
+
+    <!-- Quick Action Section -->
+    <section class="py-24 px-6 bg-white relative z-30 -mt-12">
+        <div class="max-w-[1100px] mx-auto">
+            <div class="text-center mb-16">
+                <h3 class="text-sm uppercase tracking-[0.3em] text-slate-400 font-bold mb-4">Quick Actions</h3>
+                <div class="h-1 w-12 bg-navy mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1 -->
+                <a href="#" class="bg-navy text-white p-8 rounded-[24px] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col items-start group relative overflow-hidden">
+                    <div class="absolute -top-12 -right-12 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+                    <div class="mb-6 p-3 rounded-2xl bg-white/10 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="user-plus" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-2 font-display tracking-tight">Register Now</h4>
+                    <p class="text-sm leading-relaxed text-white/70">Reserve your place at the celebration</p>
+                    <div class="mt-8 flex items-center text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        Explore <i data-lucide="chevron-right" class="w-3 h-3 ml-1"></i>
+                    </div>
+                </a>
+
+                <!-- Card 2 -->
+                <a href="#" class="bg-white text-navy border border-slate-200 p-8 rounded-[24px] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col items-start group">
+                    <div class="mb-6 p-3 rounded-2xl bg-navy/5 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="heart-handshake" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-2 font-display tracking-tight">Donate / Sponsor</h4>
+                    <p class="text-sm leading-relaxed text-slate-500">Support the event and help make it memorable</p>
+                    <div class="mt-8 flex items-center text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        Explore <i data-lucide="chevron-right" class="w-3 h-3 ml-1"></i>
+                    </div>
+                </a>
+
+                <!-- Card 3 -->
+                <a href="#" class="bg-white text-navy border border-slate-200 p-8 rounded-[24px] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col items-start group">
+                    <div class="mb-6 p-3 rounded-2xl bg-navy/5 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-2 font-display tracking-tight">Merch Store</h4>
+                    <p class="text-sm leading-relaxed text-slate-500">Shop exclusive homecoming merchandise</p>
+                    <div class="mt-8 flex items-center text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        Explore <i data-lucide="chevron-right" class="w-3 h-3 ml-1"></i>
+                    </div>
+                </a>
+
+                <!-- Card 4 -->
+                <a href="#" class="bg-white text-navy border border-slate-200 p-8 rounded-[24px] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 flex flex-col items-start group">
+                    <div class="mb-6 p-3 rounded-2xl bg-navy/5 group-hover:scale-110 transition-transform duration-500">
+                        <i data-lucide="mail" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-2 font-display tracking-tight">Contact Us</h4>
+                    <p class="text-sm leading-relaxed text-slate-500">Reach out for questions or assistance</p>
+                    <div class="mt-8 flex items-center text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        Explore <i data-lucide="chevron-right" class="w-3 h-3 ml-1"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="py-24 px-6 bg-slate-50">
+        <div class="max-w-4xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="relative">
+                    <div class="aspect-[4/5] rounded-[32px] overflow-hidden shadow-2xl">
+                        <img 
+                            src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80&w=2069" 
+                            alt="Alumni gathering" 
+                            class="w-full h-full object-cover"
+                        >
+                    </div>
+                    <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-gold/10 rounded-full blur-3xl -z-10"></div>
+                </div>
+
+                <div>
+                    <h3 class="text-3xl md:text-4xl font-display font-bold text-navy mb-6 leading-tight">
+                        Welcome Home, <br />
+                        <span class="italic text-gold">Josephinians.</span>
+                    </h3>
+                    <div class="space-y-6 text-slate-600 leading-relaxed font-light text-lg">
+                        <p>
+                            The Grand Alumni Homecoming is more than just an event; it's a journey back to the roots 
+                            that shaped us. It's a time to celebrate the shared memories, the laughter in the hallways, 
+                            and the enduring spirit of our beloved academy.
+                        </p>
+                        <p>
+                            Whether you walked the stage decades ago or are a more recent graduate, this homecoming 
+                            is your opportunity to reconnect across batches, share your stories, and witness how 
+                            our community continues to grow and thrive.
+                        </p>
+                    </div>
+                    
+                    <div class="mt-10 pt-10 border-t border-slate-200">
+                        <div class="flex items-center gap-3 text-navy font-medium">
+                            <i data-lucide="sparkles" class="w-5 h-5 text-gold"></i>
+                            <span>Celebrating Batch Elem 1997 & HS 2001</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Support Section -->
+    <section class="py-20 px-6 bg-navy text-white text-center relative overflow-hidden">
+        <div class="max-w-2xl mx-auto relative z-10">
+            <h3 class="text-2xl md:text-3xl font-display mb-6">Build the Legacy Together</h3>
+            <p class="text-slate-400 mb-8 leading-relaxed">
+                Your support through sponsorships, donations, or merchandise purchases directly contributes 
+                to making this homecoming a landmark celebration for the entire SJA community.
+            </p>
+            <div class="flex justify-center gap-4">
+                <a href="#" class="text-gold border-b border-gold/30 hover:border-gold transition-colors pb-1 text-sm font-bold uppercase tracking-widest">
+                    View Sponsorship Packages
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-16 px-6 bg-white border-t border-slate-100 text-center">
+        <div class="max-w-4xl mx-auto">
+            <div class="font-display text-2xl font-bold text-navy mb-2">SJA</div>
+            <p class="text-navy font-semibold mb-1">St. Joseph's Academy Grand Alumni Homecoming 2026</p>
+            <p class="text-slate-500 text-sm mb-6">Mandaue City, Philippines</p>
+            
+            <div class="flex flex-col items-center gap-2 mb-10">
+                <span class="text-xs uppercase tracking-[0.2em] text-slate-400 font-bold">Hosted by</span>
+                <span class="text-navy font-medium">Batch Elem 1997 & HS 2001</span>
+            </div>
+
+            <div class="h-px w-16 bg-slate-200 mx-auto mb-8"></div>
+            
+            <p class="text-slate-400 text-sm italic">
+                More updates coming soon. Stay connected with your batch representatives.
+            </p>
+            
+            <div class="mt-12 text-[10px] uppercase tracking-widest text-slate-300">
+                &copy; 2026 St. Joseph's Academy Alumni Association
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
