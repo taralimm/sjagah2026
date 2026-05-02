@@ -18,7 +18,7 @@ export default function Navbar() {
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-3 group">
-              <img src="/image_6.png" alt="SJA Logo" className="h-10 w-10 object-contain group-hover:scale-105 transition-transform" />
+              <img src="/necktie logo_bg_fixed.png" alt="SJA Logo" className="h-10 w-10 object-contain group-hover:scale-105 transition-transform" />
               <span className="font-serif text-lg font-bold tracking-tight text-denim-900 hidden sm:block uppercase">
                 SJA Homecoming 2026
               </span>
