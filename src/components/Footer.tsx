@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
           <div className="space-y-8">
             <div className="flex items-center space-x-4">
-              <img src="/image_6.png" alt="SJA Logo" className="h-10 w-10 object-contain" />
+              <img src="/necktie logo_bg_fixed.png" alt="SJA Logo" className="h-10 w-10 object-contain" />
               <span className="font-serif text-xl font-bold italic tracking-tight text-denim-900">St. Joseph's Academy</span>
             </div>
             <p className="text-denim-900/40 font-light leading-relaxed max-w-xs">
