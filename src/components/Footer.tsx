@@ -39,7 +39,7 @@ export default function Footer() {
                 <Facebook size={20} />
               </a>
               <a
-                href="mailto:contact@sjagah2026.com"
+                href="mailto:lim.taramarie@gmail.com"
                 className="bg-ivory border border-denim-900/5 text-denim-900 hover:border-gold p-4 rounded-2xl transition-all duration-300"
                 aria-label="Email"
               >
