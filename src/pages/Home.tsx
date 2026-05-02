@@ -75,7 +75,7 @@ export default function Home() {
             </motion.div>
 
             <motion.div variants={itemVariants} className="mt-16 flex items-center justify-center space-x-4">
-               <img src="/image_6.png" alt="SJA Logo" className="h-14 w-14 object-contain opacity-80" />
+               <img src="/necktie logo_bg_fixed.png" alt="SJA Logo" className="h-14 w-14 object-contain opacity-80" />
                <div className="text-left">
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-denim-900/40">Hosted By</p>
                   <p className="font-serif italic text-denim-900">Elem Batch '97 & HS Batch '01</p>
