@@ -50,14 +50,15 @@ app.use(express.json());
 // API Routes
 app.get("/api/health", (req, res) => {
   res.json({ 
-    status: "ok", 
+    status: "ok-v4-debug", 
     env: process.env.NODE_ENV,
     adminPasswordSet: !!process.env.ADMIN_PASSWORD,
     supabaseUrlSet: !!process.env.SUPABASE_URL,
     supabaseAnonKeySet: !!process.env.SUPABASE_ANON_KEY,
     supabaseServiceRoleSet: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
     currentTime: new Date().toISOString(),
-    isVercel: !!process.env.VERCEL
+    isVercel: !!process.env.VERCEL,
+    vercelEnv: process.env.VERCEL_ENV
   });
 });
 
