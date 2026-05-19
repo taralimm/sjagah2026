@@ -1,6 +1,5 @@
 import express, { Request, Response } from "express";
 import path from "path";
-import { createServer as createViteServer } from "vite";
 import { createClient } from "@supabase/supabase-js";
 import multer from "multer";
 import cors from "cors";
@@ -20,13 +19,41 @@ interface MulterRequest extends Request {
 const supabaseUrl = process.env.SUPABASE_URL || "https://hobofihsbzhqbaclkdkc.supabase.co";
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || "";
 const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-const supabase = createClient(supabaseUrl, supabaseServiceRole || supabaseAnonKey);
+
+let supabase: any;
+try {
+  if (!supabaseUrl) {
+    console.warn("SUPABASE_URL is missing.");
+  }
+  const key = (supabaseServiceRole || supabaseAnonKey || "").trim();
+  if (!key) {
+    console.warn("Supabase keys are missing. Database features will fail.");
+  }
+  supabase = createClient(supabaseUrl, key);
+} catch (e) {
+  console.error("CRITICAL: Failed to initialize Supabase client:", e);
+  // We don't throw here to prevent the whole module from failing to load on Vercel
+}
 
 // Multer for payment proof
-const upload = multer({ dest: "/tmp/uploads/" });
+let upload: any;
+try {
+  upload = multer({ dest: "/tmp/uploads/" });
+} catch (e) {
+  console.error("Failed to initialize multer:", e);
+  upload = { single: () => (req: any, res: any, next: any) => next() };
+}
 
 app.use(cors());
 app.use(express.json());
+
+// Helper to check supabase
+const getSupabase = () => {
+  if (!supabase) {
+    throw new Error("Supabase client is not initialized. Please ensure SUPABASE_URL and SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY are set in your environment variables.");
+  }
+  return supabase;
+};
 
 // API Routes
 app.get("/api/health", (req, res) => {
@@ -37,16 +64,18 @@ app.get("/api/health", (req, res) => {
     supabaseUrl: supabaseUrl,
     supabaseAnonKeySet: !!process.env.SUPABASE_ANON_KEY,
     supabaseServiceRoleSet: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-    currentTime: new Date().toISOString()
+    currentTime: new Date().toISOString(),
+    isVercel: !!process.env.VERCEL
   });
 });
 
 app.post("/api/orders", async (req, res) => {
   try {
+    const s = getSupabase();
     const orderData = req.body;
     
     // 1. Generate Order ID
-    const { data: countData, error: countError } = await supabase
+    const { data: countData, error: countError } = await s
       .from("orders")
       .select("id", { count: "exact", head: true });
     
@@ -54,7 +83,7 @@ app.post("/api/orders", async (req, res) => {
     const orderId = `DD-${count}`;
 
     // 2. Save to Supabase
-    const { data, error } = await supabase
+    const { data, error } = await s
       .from("orders")
       .insert([{
         ...orderData,
@@ -92,6 +121,7 @@ app.post("/api/orders", async (req, res) => {
 
 app.post("/api/upload-proof", upload.single("proof"), async (req: MulterRequest, res: Response) => {
   try {
+    const s = getSupabase();
     if (!req.file) throw new Error("No file uploaded");
     
     const file = req.file;
@@ -101,7 +131,7 @@ app.post("/api/upload-proof", upload.single("proof"), async (req: MulterRequest,
 
     const fileContent = fs.readFileSync(file.path);
     
-    const { data, error } = await supabase.storage
+    const { data, error } = await s.storage
       .from("payment-proofs")
       .upload(filePath, fileContent, {
         contentType: file.mimetype
@@ -109,7 +139,7 @@ app.post("/api/upload-proof", upload.single("proof"), async (req: MulterRequest,
 
     if (error) throw error;
 
-    const { data: { publicUrl } } = supabase.storage
+    const { data: { publicUrl } } = s.storage
       .from("payment-proofs")
       .getPublicUrl(filePath);
 
@@ -136,7 +166,8 @@ app.get("/api/admin/orders", async (req, res) => {
   }
 
   try {
-    const { data, error } = await supabase
+    const s = getSupabase();
+    const { data, error } = await s
       .from("orders")
       .select("*")
       .order("created_at", { ascending: false });
@@ -162,8 +193,9 @@ app.patch("/api/admin/orders/:id", async (req, res) => {
   }
 
   try {
+    const s = getSupabase();
     const { status } = req.body;
-    const { data, error } = await supabase
+    const { data, error } = await s
       .from("orders")
       .update({ status })
       .eq("id", req.params.id)
@@ -176,12 +208,23 @@ app.patch("/api/admin/orders/:id", async (req, res) => {
   }
 });
 
+// Global Error Handler
+app.use((err: any, req: Request, res: Response, next: any) => {
+  console.error("GLOBAL ERROR:", err);
+  res.status(500).json({ 
+    error: "Internal Server Error", 
+    message: err.message,
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
+});
+
 async function startServer() {
   const isProd = process.env.NODE_ENV === "production";
 
   // Vite middleware for development
   if (!isProd) {
-    const vite = await createViteServer({
+    const { createServer } = await import("vite");
+    const vite = await createServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
