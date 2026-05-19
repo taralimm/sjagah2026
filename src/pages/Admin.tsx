@@ -61,11 +61,16 @@ export default function Admin() {
         setOrders(await res.json());
         setIsAuthenticated(true);
         localStorage.setItem("admin_pwd", pwd);
+      } else if (res.status === 401) {
+        const data = await res.json();
+        const msg = data.details || "Invalid Password";
+        alert(`Access Denied: ${msg}`);
       } else {
-        alert("Invalid Password");
+        alert(`Server Error: ${res.status}. Your backend might not be configured correctly on Vercel.`);
       }
     } catch (err) {
       console.error(err);
+      alert("Connection Error: Could not reach the server. Please check your deployment.");
     } finally {
       setLoading(false);
     }
