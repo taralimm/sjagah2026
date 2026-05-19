@@ -4,12 +4,12 @@ import { createClient } from "@supabase/supabase-js";
 import multer from "multer";
 import cors from "cors";
 import fs from "fs";
-import dotenv from "dotenv";
+import * as dotenv from "dotenv";
 
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 interface MulterRequest extends Request {
   file?: any;
@@ -21,28 +21,22 @@ const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || "";
 const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 let supabase: any;
-try {
-  if (!supabaseUrl) {
-    console.warn("SUPABASE_URL is missing.");
+const key = (supabaseServiceRole || supabaseAnonKey || "").trim();
+
+if (key) {
+  try {
+    supabase = createClient(supabaseUrl, key);
+  } catch (e) {
+    console.error("CRITICAL: Failed to initialize Supabase client:", e);
   }
-  const key = (supabaseServiceRole || supabaseAnonKey || "").trim();
-  if (!key) {
-    console.warn("Supabase keys are missing. Database features will fail.");
-  }
-  supabase = createClient(supabaseUrl, key);
-} catch (e) {
-  console.error("CRITICAL: Failed to initialize Supabase client:", e);
-  // We don't throw here to prevent the whole module from failing to load on Vercel
+} else {
+  console.warn("Supabase keys are missing. Database features will fail.");
 }
 
-// Multer for payment proof
-let upload: any;
-try {
-  upload = multer({ dest: "/tmp/uploads/" });
-} catch (e) {
-  console.error("Failed to initialize multer:", e);
-  upload = { single: () => (req: any, res: any, next: any) => next() };
-}
+// Multer for payment proof - Use memory storage for Vercel to avoid disk issues
+// Although /tmp is writable, memory storage is safer for small proofs
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 app.use(cors());
 app.use(express.json());
@@ -50,7 +44,7 @@ app.use(express.json());
 // Helper to check supabase
 const getSupabase = () => {
   if (!supabase) {
-    throw new Error("Supabase client is not initialized. Please ensure SUPABASE_URL and SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY are set in your environment variables.");
+    throw new Error("Supabase client is not initialized. Please ensure SUPABASE_URL and SUPABASE_ANON_KEY are set in Vercel environment variables.");
   }
   return supabase;
 };
@@ -129,11 +123,9 @@ app.post("/api/upload-proof", upload.single("proof"), async (req: MulterRequest,
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}${fileExt}`;
     const filePath = `proofs/${fileName}`;
 
-    const fileContent = fs.readFileSync(file.path);
-    
     const { data, error } = await s.storage
       .from("payment-proofs")
-      .upload(filePath, fileContent, {
+      .upload(filePath, file.buffer, {
         contentType: file.mimetype
       });
 
@@ -144,10 +136,8 @@ app.post("/api/upload-proof", upload.single("proof"), async (req: MulterRequest,
       .getPublicUrl(filePath);
 
     res.json({ url: publicUrl });
-    
-    // Cleanup temporary file
-    fs.unlinkSync(file.path);
   } catch (error: any) {
+    console.error("Upload Error:", error);
     res.status(500).json({ error: error.message });
   }
 });
