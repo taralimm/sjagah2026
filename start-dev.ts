@@ -1,7 +1,8 @@
 import { app } from "./server";
 import path from "path";
+import express from "express";
 
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 async function start() {
   const isProd = process.env.NODE_ENV === "production";
