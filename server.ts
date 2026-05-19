@@ -34,7 +34,10 @@ app.get("/api/health", (req, res) => {
     status: "ok", 
     env: process.env.NODE_ENV,
     adminPasswordSet: !!process.env.ADMIN_PASSWORD,
-    adminPasswordLength: process.env.ADMIN_PASSWORD?.length || 0
+    supabaseUrl: supabaseUrl,
+    supabaseAnonKeySet: !!process.env.SUPABASE_ANON_KEY,
+    supabaseServiceRoleSet: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+    currentTime: new Date().toISOString()
   });
 });
 
@@ -141,7 +144,11 @@ app.get("/api/admin/orders", async (req, res) => {
     if (error) throw error;
     res.json(data);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Orders Fetch Error:", error);
+    res.status(500).json({ 
+      error: error.message || "Unknown error",
+      details: error
+    });
   }
 });
 
