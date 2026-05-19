@@ -30,7 +30,12 @@ app.use(express.json());
 
 // API Routes
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", env: process.env.NODE_ENV });
+  res.json({ 
+    status: "ok", 
+    env: process.env.NODE_ENV,
+    adminPasswordSet: !!process.env.ADMIN_PASSWORD,
+    adminPasswordLength: process.env.ADMIN_PASSWORD?.length || 0
+  });
 });
 
 app.post("/api/orders", async (req, res) => {
@@ -117,8 +122,14 @@ app.post("/api/upload-proof", upload.single("proof"), async (req: MulterRequest,
 // Admin routes
 app.get("/api/admin/orders", async (req, res) => {
   const authHeader = req.headers.authorization;
-  if (authHeader !== `Bearer ${process.env.ADMIN_PASSWORD}`) {
-    return res.status(401).json({ error: "Unauthorized" });
+  const providedPwd = authHeader?.replace("Bearer ", "").trim();
+  const serverPwd = (process.env.ADMIN_PASSWORD || "").trim();
+
+  if (!serverPwd || providedPwd !== serverPwd) {
+    return res.status(401).json({ 
+      error: "Unauthorized", 
+      details: !serverPwd ? "Server: ADMIN_PASSWORD is not set in environment variables." : "Password mismatch."
+    });
   }
 
   try {
@@ -136,7 +147,10 @@ app.get("/api/admin/orders", async (req, res) => {
 
 app.patch("/api/admin/orders/:id", async (req, res) => {
   const authHeader = req.headers.authorization;
-  if (authHeader !== `Bearer ${process.env.ADMIN_PASSWORD}`) {
+  const providedPwd = authHeader?.replace("Bearer ", "").trim();
+  const serverPwd = (process.env.ADMIN_PASSWORD || "").trim();
+
+  if (!serverPwd || providedPwd !== serverPwd) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
@@ -178,4 +192,10 @@ async function startServer() {
   });
 }
 
-startServer();
+export { app };
+
+if (process.env.NODE_ENV !== "production" || process.env.RUN_STANDALONE) {
+  startServer();
+}
+
+export default app;
