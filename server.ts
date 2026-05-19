@@ -1,9 +1,8 @@
-import express, { Request, Response } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import path from "path";
 import { createClient } from "@supabase/supabase-js";
 import multer from "multer";
 import cors from "cors";
-import fs from "fs";
 
 const app = express();
 
@@ -47,9 +46,9 @@ app.use(cors());
 app.use(express.json());
 
 // API Routes
-app.get("/api/health", (req, res) => {
+app.get("/api/health", (req: Request, res: Response) => {
   res.json({ 
-    status: "ok-v4-debug", 
+    status: "ok-v6-serverless", 
     env: process.env.NODE_ENV,
     adminPasswordSet: !!process.env.ADMIN_PASSWORD,
     supabaseUrlSet: !!process.env.SUPABASE_URL,
@@ -61,7 +60,7 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-app.post("/api/orders", async (req, res) => {
+app.post("/api/orders", async (req: Request, res: Response) => {
   try {
     const s = getSupabase();
     const orderData = req.body;
@@ -111,14 +110,14 @@ app.post("/api/orders", async (req, res) => {
   }
 });
 
-app.post("/api/upload-proof", (req: Request, res: Response, next: any) => {
-  getUpload().single("proof")(req, res, next);
-}, async (req: MulterRequest, res: Response) => {
+// Helper for upload route to avoid type overload issues
+const handleUpload = async (req: Request, res: Response) => {
   try {
     const s = getSupabase();
-    if (!req.file) throw new Error("No file uploaded");
+    const multerReq = req as MulterRequest;
+    if (!multerReq.file) throw new Error("No file uploaded");
     
-    const file = req.file;
+    const file = multerReq.file;
     const fileExt = path.extname(file.originalname);
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}${fileExt}`;
     const filePath = `proofs/${fileName}`;
@@ -140,10 +139,14 @@ app.post("/api/upload-proof", (req: Request, res: Response, next: any) => {
     console.error("Upload Error:", error);
     res.status(500).json({ error: error.message });
   }
-});
+};
+
+app.post("/api/upload-proof", (req, res, next) => {
+  getUpload().single("proof")(req, res, next);
+}, handleUpload);
 
 // Admin routes
-app.get("/api/admin/orders", async (req, res) => {
+app.get("/api/admin/orders", async (req: Request, res: Response) => {
   const authHeader = req.headers.authorization;
   const providedPwd = authHeader?.replace("Bearer ", "").trim();
   const serverPwd = (process.env.ADMIN_PASSWORD || "").trim();
@@ -173,7 +176,7 @@ app.get("/api/admin/orders", async (req, res) => {
   }
 });
 
-app.patch("/api/admin/orders/:id", async (req, res) => {
+app.patch("/api/admin/orders/:id", async (req: Request, res: Response) => {
   const authHeader = req.headers.authorization;
   const providedPwd = authHeader?.replace("Bearer ", "").trim();
   const serverPwd = (process.env.ADMIN_PASSWORD || "").trim();
@@ -199,15 +202,13 @@ app.patch("/api/admin/orders/:id", async (req, res) => {
 });
 
 // Global Error Handler
-app.use((err: any, req: Request, res: Response, next: any) => {
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error("GLOBAL ERROR:", err);
   res.status(500).json({ 
     error: "Internal Server Error", 
-    message: err.message,
-    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    message: err.message
   });
 });
 
 export { app };
-
 export default app;
