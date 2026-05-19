@@ -66,7 +66,18 @@ export default function Admin() {
         const msg = data.details || "Invalid Password";
         alert(`Access Denied: ${msg}`);
       } else {
-        alert(`Server Error: ${res.status}. Your backend might not be configured correctly on Vercel.`);
+        try {
+          const text = await res.text();
+          let data;
+          try {
+            data = JSON.parse(text);
+          } catch (e) {
+            data = { error: text };
+          }
+          alert(`Server Error ${res.status}: ${data.error || text || "Unknown server error"}`);
+        } catch (e) {
+          alert(`Server Error: ${res.status}. Your backend might not be configured correctly on Vercel.`);
+        }
       }
     } catch (err) {
       console.error(err);
