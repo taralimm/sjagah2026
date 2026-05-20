@@ -125,7 +125,14 @@ export default function Merch() {
         body: proofFormData
       });
       
-      if (!uploadRes.ok) throw new Error("Failed to upload payment proof");
+      if (!uploadRes.ok) {
+        let errMsg = "Failed to upload payment proof";
+        try {
+          const errData = await uploadRes.json();
+          if (errData && errData.error) errMsg = `Failed to upload payment proof: ${errData.error}`;
+        } catch (e) {}
+        throw new Error(errMsg);
+      }
       const { url: proofUrl } = await uploadRes.json();
 
       // 2. Submit order
@@ -148,7 +155,14 @@ export default function Merch() {
         body: JSON.stringify(orderPayload)
       });
 
-      if (!orderRes.ok) throw new Error("Failed to submit order");
+      if (!orderRes.ok) {
+        let errMsg = "Failed to submit order";
+        try {
+          const errData = await orderRes.json();
+          if (errData && errData.error) errMsg = `Failed to submit order: ${errData.error}`;
+        } catch (e) {}
+        throw new Error(errMsg);
+      }
       const { orderId } = await orderRes.json();
       
       setOrderId(orderId);
