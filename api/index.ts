@@ -73,15 +73,35 @@ app.post("/api/orders", async (req: Request, res: Response) => {
     const count = (countData?.length || 0) + 1001;
     const orderId = `DD-${count}`;
 
+    // Map frontend order fields to exact database columns
+    const capItem = orderData.items?.find((item: any) => 
+      item.name?.toLowerCase().includes("cap") || item.id === "cap"
+    );
+    const umbrellaItem = orderData.items?.find((item: any) => 
+      item.name?.toLowerCase().includes("umbrella") || item.id === "umbrella"
+    );
+
+    const supabasePayload = {
+      order_id: orderId,
+      full_name: orderData.customer_name || orderData.fullName || "",
+      mobile_number: orderData.mobile || orderData.mobileNumber || "",
+      facebook_profile: orderData.facebook || orderData.facebookName || "",
+      delivery_option: orderData.delivery_option || orderData.deliveryOption || "claim",
+      delivery_address: orderData.address || "N/A (Claim on Event)",
+      notes: orderData.notes || "",
+      cap_qty: capItem ? capItem.quantity : 0,
+      umbrella_qty: umbrellaItem ? umbrellaItem.quantity : 0,
+      total_amount: orderData.total_amount || 0,
+      payment_method: orderData.payment_method || "",
+      payment_proof_url: orderData.proof_url || "",
+      order_status: "Pending Verification",
+      created_at: new Date().toISOString()
+    };
+
     // 2. Save to Supabase
     const { data, error } = await s
       .from("orders")
-      .insert([{
-        ...orderData,
-        order_id: orderId,
-        status: "Pending Verification",
-        created_at: new Date().toISOString()
-      }])
+      .insert([supabasePayload])
       .select();
 
     if (error) throw error;
@@ -166,7 +186,35 @@ app.get("/api/admin/orders", async (req: Request, res: Response) => {
       .order("created_at", { ascending: false });
     
     if (error) throw error;
-    res.json(data);
+
+    // Map the database rows to the names expected by the frontend Admin component
+    const mappedOrders = (data || []).map((o: any) => {
+      const items = [];
+      if (o.cap_qty > 0) {
+        items.push({ name: "SJA Baseball Cap", quantity: o.cap_qty, price: 500 });
+      }
+      if (o.umbrella_qty > 0) {
+        items.push({ name: "SJA J-Type Umbrella", quantity: o.umbrella_qty, price: 500 });
+      }
+
+      return {
+        id: o.id,
+        order_id: o.order_id,
+        customer_name: o.full_name,
+        mobile: o.mobile_number,
+        facebook: o.facebook_profile,
+        delivery_option: o.delivery_option,
+        total_amount: o.total_amount,
+        status: o.order_status,
+        created_at: o.created_at,
+        proof_url: o.payment_proof_url,
+        items,
+        address: o.delivery_address,
+        notes: o.notes
+      };
+    });
+
+    res.json(mappedOrders);
   } catch (error: any) {
     console.error("Orders Fetch Error:", error);
     res.status(500).json({ 
@@ -190,12 +238,38 @@ app.patch("/api/admin/orders/:id", async (req: Request, res: Response) => {
     const { status } = req.body;
     const { data, error } = await s
       .from("orders")
-      .update({ status })
+      .update({ order_status: status })
       .eq("id", req.params.id)
       .select();
 
     if (error) throw error;
-    res.json(data[0]);
+    
+    const o = data[0];
+    const items = [];
+    if (o.cap_qty > 0) {
+      items.push({ name: "SJA Baseball Cap", quantity: o.cap_qty, price: 500 });
+    }
+    if (o.umbrella_qty > 0) {
+      items.push({ name: "SJA J-Type Umbrella", quantity: o.umbrella_qty, price: 500 });
+    }
+
+    const mapped = {
+      id: o.id,
+      order_id: o.order_id,
+      customer_name: o.full_name,
+      mobile: o.mobile_number,
+      facebook: o.facebook_profile,
+      delivery_option: o.delivery_option,
+      total_amount: o.total_amount,
+      status: o.order_status,
+      created_at: o.created_at,
+      proof_url: o.payment_proof_url,
+      items,
+      address: o.delivery_address,
+      notes: o.notes
+    };
+
+    res.json(mapped);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
