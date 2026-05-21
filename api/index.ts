@@ -66,12 +66,14 @@ app.post("/api/orders", async (req: Request, res: Response) => {
     const orderData = req.body;
     
     // 1. Generate Order ID
-    const { data: countData, error: countError } = await s
+    const { count, error: countError } = await s
       .from("orders")
-      .select("id", { count: "exact", head: true });
+      .select("*", { count: "exact", head: true });
     
-    const count = (countData?.length || 0) + 1001;
-    const orderId = `DD-${count}`;
+    if (countError) throw countError;
+    
+    const nextCount = (count !== null && count !== undefined ? count : 0) + 1001;
+    const orderId = `DD-${nextCount}`;
 
     // Map frontend order fields to exact database columns
     const capItem = orderData.items?.find((item: any) => 
