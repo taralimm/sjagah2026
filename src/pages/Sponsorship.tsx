@@ -1,9 +1,16 @@
-import { motion } from "motion/react";
-import { Check, CreditCard, Gift, Heart, Info, Sparkles, Diamond, ArrowLeft } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Check, CreditCard, Gift, Heart, Info, Sparkles, Diamond, ArrowLeft, Smartphone } from "lucide-react";
 import { Link } from "react-router-dom";
 import { SPONSORSHIP_PACKAGES, PAYMENT_METHODS, CONTACT_FACEBOOK } from "../constants";
 
 export default function Sponsorship() {
+  const [selectedMethod, setSelectedMethod] = useState<'bank' | 'gcash' | null>(null);
+
+  const openGCash = () => {
+    window.location.href = "gcash://";
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
@@ -178,74 +185,161 @@ export default function Sponsorship() {
         {/* Payment Details */}
         <section id="payment-channels" className="bg-ivory py-24 border-y border-denim-900/5">
            <div className="max-w-4xl mx-auto px-4">
-              <div className="text-center mb-20">
+              <div className="text-center mb-12">
                  <h2 className="text-4xl font-display font-light text-denim-900 mb-4 uppercase tracking-[0.2em]">Secure Channels</h2>
                  <p className="text-denim-900/40 text-xs font-bold uppercase tracking-widest">Select your preferred method of contribution</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                 {/* Bank */}
-                 <div className="space-y-8 p-10 bg-white rounded-[3rem] shadow-2xl shadow-denim-900/5 border border-denim-900/5">
-                    <div className="flex items-center space-x-4 mb-10">
-                       <div className="bg-denim-900 p-4 rounded-2xl text-white shadow-xl shadow-denim-900/20">
-                          <CreditCard size={24} />
-                       </div>
-                       <h3 className="font-display font-bold text-lg uppercase tracking-widest">Bank Transfer</h3>
-                    </div>
-                    <div className="space-y-6">
-                       <div>
-                          <p className="text-[10px] font-bold text-denim-900/30 uppercase tracking-widest mb-1">Bank</p>
-                          <p className="font-bold text-lg">{PAYMENT_METHODS.bank.name}</p>
-                       </div>
-                       <div>
-                          <p className="text-[10px] font-bold text-denim-900/30 uppercase tracking-widest mb-1">Name</p>
-                          <p className="font-bold text-lg">{PAYMENT_METHODS.bank.accountName}</p>
-                       </div>
-                       <div>
-                          <p className="text-[10px] font-bold text-denim-900/30 uppercase tracking-widest mb-1">Account</p>
-                          <p className="font-display text-4xl font-medium tracking-tight text-denim-900">{PAYMENT_METHODS.bank.accountNumber}</p>
-                       </div>
-                       <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-denim-100/50 p-4 rounded-2xl">
-                             <p className="text-[10px] font-bold text-denim-900/30 uppercase tracking-widest mb-1">SWIFT</p>
-                             <p className="font-mono text-xs">{PAYMENT_METHODS.bank.swiftCode}</p>
-                          </div>
-                          <div className="bg-gold/5 p-4 rounded-2xl">
-                             <p className="text-[10px] font-bold text-gold/60 uppercase tracking-widest mb-1">CODE</p>
-                             <p className="font-mono text-xs">{PAYMENT_METHODS.bank.bankCode}</p>
-                          </div>
-                       </div>
-                    </div>
-                 </div>
+              {/* Selector Buttons */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16">
+                 <button
+                    onClick={() => setSelectedMethod('bank')}
+                    className={`flex items-center space-x-3 px-8 py-4 rounded-full font-display text-xs font-bold uppercase tracking-widest border-2 transition-all cursor-pointer ${
+                       selectedMethod === 'bank'
+                         ? "bg-denim-900 border-denim-900 text-white shadow-xl shadow-denim-900/25"
+                         : "bg-white border-denim-900/10 text-denim-900 hover:border-denim-900/30 hover:bg-denim-900/5"
+                    }`}
+                 >
+                    <CreditCard size={18} />
+                    <span>Bank Transfer</span>
+                 </button>
+                 <button
+                    onClick={() => setSelectedMethod('gcash')}
+                    className={`flex items-center space-x-3 px-8 py-4 rounded-full font-display text-xs font-bold uppercase tracking-widest border-2 transition-all cursor-pointer ${
+                       selectedMethod === 'gcash'
+                         ? "bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-600/25"
+                         : "bg-white border-blue-600/10 text-blue-600 hover:border-blue-600/30 hover:bg-blue-600/5"
+                    }`}
+                 >
+                    <Diamond size={18} />
+                    <span>GCash Mobile</span>
+                 </button>
+              </div>
 
-                 {/* GCash */}
-                 <div className="space-y-8 p-10 bg-white rounded-[3rem] shadow-2xl shadow-denim-900/5 border border-denim-900/5 flex flex-col">
-                    <div className="flex items-center space-x-4 mb-10">
-                       <div className="bg-blue-600 p-4 rounded-2xl text-white shadow-xl shadow-blue-600/20">
-                          <Diamond size={24} />
-                       </div>
-                       <h3 className="font-display font-bold text-lg uppercase tracking-widest">GCash</h3>
-                    </div>
-                    <div className="space-y-8 flex-grow">
-                       <div>
-                          <p className="text-[10px] font-bold text-denim-900/30 uppercase tracking-widest mb-1">Name</p>
-                          <p className="font-bold text-lg">{PAYMENT_METHODS.gcash.accountName}</p>
-                       </div>
-                       <div>
-                          <p className="text-[10px] font-bold text-denim-900/30 uppercase tracking-widest mb-1">Mobile</p>
-                          <p className="font-display text-5xl font-medium tracking-tighter text-blue-600">{PAYMENT_METHODS.gcash.mobileNumber}</p>
-                       </div>
-                       
-                       <div className="bg-blue-50 border border-blue-100 p-8 rounded-3xl mt-auto">
-                          <div className="flex items-start space-x-4">
-                             <Info className="text-blue-600 shrink-0 mt-1" size={18} />
-                             <p className="text-sm text-blue-900 leading-relaxed">
-                                Once sent, please share a screenshot with our <a href={CONTACT_FACEBOOK} className="font-bold underline">Facebook team</a> for confirmation.
-                             </p>
+              <div className="max-w-xl mx-auto">
+                 <AnimatePresence mode="wait">
+                    {selectedMethod === null ? (
+                       <motion.div
+                          key="empty"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="text-center p-12 bg-white rounded-[3rem] border border-denim-900/5 shadow-xl shadow-denim-900/5"
+                       >
+                          <Info size={36} className="text-gold mx-auto mb-4 animate-pulse" />
+                          <p className="text-lg text-denim-900/70 font-light leading-relaxed mb-1">
+                             Select a channel above to retrieve payment instructions
+                          </p>
+                          <p className="text-xs text-denim-900/40">
+                             Offline secure transactions with real-time support confirmation.
+                          </p>
+                       </motion.div>
+                    ) : selectedMethod === 'bank' ? (
+                       <motion.div
+                          key="bank"
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          transition={{ duration: 0.2 }}
+                          className="space-y-8 p-10 bg-white rounded-[3rem] shadow-2xl shadow-denim-900/5 border border-denim-900/10"
+                       >
+                          <div className="flex items-center space-x-4 mb-4">
+                             <div className="bg-denim-900 p-4 rounded-2xl text-white shadow-xl shadow-denim-900/20">
+                                <CreditCard size={24} />
+                             </div>
+                             <div>
+                                <h3 className="font-display font-bold text-lg uppercase tracking-widest text-denim-900">Bank Transfer</h3>
+                                <p className="text-[10px] uppercase tracking-widest text-gold font-bold">Secure Account Details</p>
+                             </div>
                           </div>
-                       </div>
-                    </div>
-                 </div>
+                          <div className="space-y-6">
+                             <div>
+                                <p className="text-[10px] font-bold text-denim-900/30 uppercase tracking-widest mb-1">Bank</p>
+                                <p className="font-bold text-lg text-denim-900">{PAYMENT_METHODS.bank.name}</p>
+                             </div>
+                             <div>
+                                <p className="text-[10px] font-bold text-denim-900/30 uppercase tracking-widest mb-1">Name</p>
+                                <p className="font-bold text-lg text-denim-900">{PAYMENT_METHODS.bank.accountName}</p>
+                             </div>
+                             <div>
+                                <p className="text-[10px] font-bold text-denim-900/30 uppercase tracking-widest mb-1">Account</p>
+                                <p className="font-display text-4xl font-medium tracking-tight text-denim-900">{PAYMENT_METHODS.bank.accountNumber}</p>
+                             </div>
+                             <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-denim-100/50 p-4 rounded-2xl">
+                                   <p className="text-[10px] font-bold text-denim-900/30 uppercase tracking-widest mb-1">SWIFT</p>
+                                   <p className="font-mono text-xs text-denim-900">{PAYMENT_METHODS.bank.swiftCode}</p>
+                                </div>
+                                <div className="bg-gold/5 p-4 rounded-2xl">
+                                   <p className="text-[10px] font-bold text-gold/60 uppercase tracking-widest mb-1">CODE</p>
+                                   <p className="font-mono text-xs text-gold font-bold">{PAYMENT_METHODS.bank.bankCode}</p>
+                                </div>
+                             </div>
+                          </div>
+                       </motion.div>
+                    ) : (
+                       <motion.div
+                          key="gcash"
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          transition={{ duration: 0.2 }}
+                          className="space-y-8 p-10 bg-white rounded-[3rem] shadow-2xl shadow-denim-900/5 border border-blue-600/10 flex flex-col"
+                       >
+                          <div className="flex items-center space-x-4 mb-4">
+                             <div className="bg-blue-600 p-4 rounded-2xl text-white shadow-xl shadow-blue-600/20">
+                                <Diamond size={24} />
+                             </div>
+                             <div>
+                                <h3 className="font-display font-bold text-lg uppercase tracking-widest text-blue-600">GCash Mobile</h3>
+                                <p className="text-[10px] uppercase tracking-widest text-blue-600/70 font-bold">Fast & Convenient</p>
+                             </div>
+                          </div>
+                           <div className="space-y-8 flex-grow">
+                             <div>
+                                <p className="text-[10px] font-bold text-denim-900/30 uppercase tracking-widest mb-1">Name</p>
+                                <p className="font-bold text-lg text-denim-900">{PAYMENT_METHODS.gcash.accountName}</p>
+                             </div>
+                             <div>
+                                <p className="text-[10px] font-bold text-denim-900/30 uppercase tracking-widest mb-1">Mobile</p>
+                                <p className="font-display text-5xl font-medium tracking-tighter text-blue-600">{PAYMENT_METHODS.gcash.mobileNumber}</p>
+                             </div>
+                             
+                             <button 
+                                type="button"
+                                onClick={openGCash}
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-full font-bold uppercase text-xs tracking-widest flex items-center justify-center space-x-2 shadow-xl shadow-blue-600/25 cursor-pointer transition-all mt-auto"
+                             >
+                                <Smartphone size={18} />
+                                <span>Open GCash App</span>
+                             </button>
+                          </div>
+                       </motion.div>
+                    )}
+                 </AnimatePresence>
+
+                 {/* Shared Verification Instructions Card */}
+                 <AnimatePresence>
+                    {selectedMethod !== null && (
+                       <motion.div
+                          initial={{ opacity: 0, y: 15 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 15 }}
+                          transition={{ duration: 0.25 }}
+                          className="mt-8 p-8 bg-gold/5 border border-gold/20 rounded-[2.5rem] shadow-xl shadow-denim-900/5 text-left"
+                       >
+                          <div className="flex items-start space-x-4">
+                             <Info className="text-gold shrink-0 mt-0.5" size={20} />
+                             <div className="space-y-1">
+                                <h4 className="font-display font-bold text-[10px] uppercase tracking-widest text-denim-900">Verification Steps</h4>
+                                <p className="text-xs text-denim-900/70 leading-relaxed">
+                                   Please secure a screenshot or transaction slip of your transfer and send it to our <a href={CONTACT_FACEBOOK} target="_blank" rel="noopener noreferrer" className="font-bold underline text-gold hover:text-gold/80 transition-colors">Facebook team</a>. Our automated verification group will match your pledge with our records today.
+                                </p>
+                             </div>
+                          </div>
+                       </motion.div>
+                    )}
+                 </AnimatePresence>
               </div>
            </div>
         </section>
