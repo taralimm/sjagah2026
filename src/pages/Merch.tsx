@@ -15,7 +15,8 @@ import {
   Building2,
   Package,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  Sparkles
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PAYMENT_METHODS } from "../constants";
@@ -40,6 +41,13 @@ const PRODUCTS: Product[] = [
     price: 500,
     description: "Navy Blue Baseball cap with embroidered SJA logo",
     image: "/SJA Merch BB Cap.jpg"
+  },
+  {
+    id: "running-cap",
+    name: "SJA Running Cap",
+    price: 500,
+    description: "Lightweight, breathable dry-fit running cap with SJA logo",
+    image: "/SJA Merch Running Cap.jpg"
   },
   {
     id: "umbrella",
@@ -220,6 +228,23 @@ export default function Merch() {
         
         {view === 'catalog' ? (
           <>
+            {/* Header Navigation & Open Cart Trigger */}
+            <div className="flex justify-between items-center mb-12 border-b border-denim-900/5 pb-6">
+              <Link to="/" className="inline-flex items-center space-x-2 text-denim-900/60 hover:text-denim-900 text-xs font-bold uppercase tracking-widest transition-colors">
+                <ArrowLeft size={16} />
+                <span>Return Home</span>
+              </Link>
+              
+              <button 
+                type="button"
+                onClick={() => setIsCartOpen(true)}
+                className="inline-flex items-center space-x-2 bg-white hover:bg-denim-900 hover:text-white text-denim-900 border border-denim-900/10 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-all shadow-sm cursor-pointer"
+              >
+                <ShoppingBag size={16} className="text-gold" />
+                <span>View Cart ({cart.reduce((sum, item) => sum + item.quantity, 0)})</span>
+              </button>
+            </div>
+
             <header className="mb-16 text-center">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -227,17 +252,18 @@ export default function Merch() {
                 className="inline-flex items-center space-x-2 bg-gold/10 text-gold px-4 py-1.5 rounded-full mb-6"
               >
                 <ShoppingBag size={14} />
-                <span className="font-bold text-[10px] uppercase tracking-[0.3em]">Official Alumnae Merch</span>
+                <span className="font-bold text-[10px] uppercase tracking-[0.3em]">Homecoming Exclusive Souvenirs</span>
               </motion.div>
-              <h1 className="text-5xl md:text-7xl font-display font-light text-denim-900 mb-6">
-                SJA <span className="font-serif italic text-gold">Shop.</span>
+              <h1 className="text-5xl md:text-7xl font-display font-light text-denim-900 mb-6 font-semibold">
+                Homecoming <span className="font-serif italic text-gold font-normal">Memorabilia.</span>
               </h1>
-              <p className="text-denim-900/60 max-w-xl mx-auto font-light italic">
-                Exclusive pre-order collection for the 2026 Grand Alumni Homecoming. Wear your pride!
+              <p className="text-denim-900/60 max-w-2xl mx-auto font-light leading-relaxed">
+                Commemorative pre-order collection for the upcoming 2026 Grand Alumnae Homecoming event. <br />
+                <span className="text-[10px] text-denim-900/40 uppercase tracking-widest font-bold block mt-2">(Not affiliated with official SJA school stores • Organised by Alumni Host Batches)</span>
               </p>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20 max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20 max-w-6xl mx-auto">
               {PRODUCTS.map((product) => (
                 <motion.div 
                   key={product.id}
@@ -546,25 +572,45 @@ export default function Merch() {
                 {cart.length === 0 ? (
                   <div className="text-center py-20 opacity-40 italic font-light">Your basket is empty</div>
                 ) : (
-                  cart.map((item) => (
-                    <div key={item.id} className="flex space-x-6 items-center">
-                      <div className="w-20 h-24 bg-denim-100 rounded-2xl overflow-hidden shrink-0">
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex-grow">
-                        <h4 className="font-bold text-denim-900 text-sm uppercase tracking-tight">{item.name}</h4>
-                        <p className="text-gold font-display font-bold text-lg mb-3">₱{(item.price * item.quantity).toLocaleString()}</p>
-                        <div className="flex items-center space-x-4">
-                          <div className="flex items-center border border-denim-900/5 rounded-full overflow-hidden h-8">
-                            <button onClick={() => updateQuantity(item.id, -1)} className="px-3 hover:bg-denim-100 transition-colors"><Minus size={12} /></button>
-                            <span className="px-2 text-xs font-bold w-6 text-center">{item.quantity}</span>
-                            <button onClick={() => updateQuantity(item.id, 1)} className="px-3 hover:bg-denim-100 transition-colors"><Plus size={12} /></button>
+                  <div className="space-y-8">
+                    {cart.map((item) => (
+                      <div key={item.id} className="flex space-x-6 items-center border-b border-denim-900/5 pb-6 last:border-none last:pb-0">
+                        <div className="w-20 h-24 bg-denim-100 rounded-2xl overflow-hidden shrink-0">
+                          <img 
+                            src={item.image} 
+                            alt={item.name} 
+                            className="w-full h-full object-cover" 
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = "https://placehold.co/150x200/1a233e/ffffff?text=" + item.name;
+                            }}
+                          />
+                        </div>
+                        <div className="flex-grow">
+                          <h4 className="font-bold text-denim-900 text-sm uppercase tracking-tight">{item.name}</h4>
+                          <p className="text-gold font-display font-bold text-lg mb-3">₱{(item.price * item.quantity).toLocaleString()}</p>
+                          <div className="flex items-center space-x-4">
+                            <div className="flex items-center border border-denim-900/5 rounded-full overflow-hidden h-8">
+                              <button type="button" onClick={() => updateQuantity(item.id, -1)} className="px-3 hover:bg-denim-100 transition-colors"><Minus size={12} /></button>
+                              <span className="px-2 text-xs font-bold w-6 text-center">{item.quantity}</span>
+                              <button type="button" onClick={() => updateQuantity(item.id, 1)} className="px-3 hover:bg-denim-100 transition-colors"><Plus size={12} /></button>
+                            </div>
+                            <button type="button" onClick={() => removeFromCart(item.id)} className="text-red-500 hover:text-red-600"><Trash2 size={16} /></button>
                           </div>
-                          <button onClick={() => removeFromCart(item.id)} className="text-red-500 hover:text-red-600"><Trash2 size={16} /></button>
                         </div>
                       </div>
+                    ))}
+                    
+                    {/* Nice user prompt asking to add more products */}
+                    <div className="p-5 bg-gold/5 border border-gold/15 rounded-2xl flex items-start gap-3 mt-8">
+                      <Sparkles className="text-gold shrink-0 mt-0.5" size={16} />
+                      <div className="space-y-1">
+                        <p className="text-xs font-bold text-denim-900 uppercase tracking-widest">Adding More Items?</p>
+                        <p className="text-[11px] text-denim-900/60 leading-relaxed text-left">
+                          Simply close this cart drawer! Your selected items will remain in your basket so you can continue browsing and add caps, umbrellas, or event gear.
+                        </p>
+                      </div>
                     </div>
-                  ))
+                  </div>
                 )}
               </div>
 
