@@ -19,7 +19,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { PAYMENT_METHODS } from "../constants";
+import { PAYMENT_METHODS, MERCH_PAYMENT_METHODS } from "../constants";
 
 // Types
 interface Product {
@@ -259,7 +259,7 @@ export default function Merch() {
               </h1>
               <p className="text-denim-900/60 max-w-2xl mx-auto font-light leading-relaxed">
                 Commemorative pre-order collection for the upcoming 2026 Grand Alumnae Homecoming event. <br />
-                <span className="text-[10px] text-denim-900/40 uppercase tracking-widest font-bold block mt-2">(Disclaimer: Not affiliated with any official ASJ school stores • Organised by the Grand Alumni Homecoming 2026 Host Batches)</span>
+                <span className="text-[10px] text-denim-900/40 uppercase tracking-widest font-bold block mt-2">(Not affiliated with official SJA school stores • Organised by Alumni Host Batches)</span>
               </p>
             </header>
 
@@ -429,64 +429,24 @@ export default function Merch() {
                    </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-10">
-                   <button 
+                <div className="space-y-6">
+                  <div className="p-6 bg-blue-50 border border-blue-100 rounded-3xl">
+                    <p className="text-[10px] font-bold text-blue-900/40 uppercase tracking-widest mb-1">GCash Account Name</p>
+                    <p className="font-bold text-lg text-blue-900">{MERCH_PAYMENT_METHODS.gcash.accountName}</p>
+                    <div className="mt-4">
+                      <p className="text-[10px] font-bold text-blue-900/40 uppercase tracking-widest mb-1">GCash Number</p>
+                      <p className="font-display text-4xl font-medium tracking-tighter text-blue-600">{MERCH_PAYMENT_METHODS.gcash.mobileNumber}</p>
+                    </div>
+                  </div>
+                  <button 
                     type="button"
-                    onClick={() => setFormData({ ...formData, paymentMethod: "gcash" })}
-                    className={`p-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center ${
-                      formData.paymentMethod === "gcash" ? "border-blue-600 bg-blue-50 text-blue-600" : "border-denim-900/5 opacity-50"
-                    }`}
-                   >
-                     <Smartphone className="mb-2" />
-                     <span className="font-bold text-xs uppercase tracking-widest">GCash</span>
-                   </button>
-                   <button 
-                    type="button"
-                    onClick={() => setFormData({ ...formData, paymentMethod: "bank" })}
-                    className={`p-6 rounded-2xl border-2 transition-all flex flex-col items-center justify-center ${
-                      formData.paymentMethod === "bank" ? "border-denim-900 bg-denim-50 text-denim-900" : "border-denim-900/5 opacity-50"
-                    }`}
-                   >
-                     <Building2 className="mb-2" />
-                     <span className="font-bold text-xs uppercase tracking-widest">Bank</span>
-                   </button>
+                    onClick={openGCash}
+                    className="w-full bg-blue-600 text-white py-4 rounded-full font-bold uppercase text-xs tracking-widest flex items-center justify-center space-x-2 shadow-xl shadow-blue-600/20"
+                  >
+                    <Smartphone size={18} />
+                    <span>Open GCash App</span>
+                  </button>
                 </div>
-
-                {formData.paymentMethod === "gcash" ? (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                    <div className="p-6 bg-blue-50 border border-blue-100 rounded-3xl">
-                      <p className="text-[10px] font-bold text-blue-900/40 uppercase tracking-widest mb-1">GCash Account Name</p>
-                      <p className="font-bold text-lg text-blue-900">{PAYMENT_METHODS.gcash.accountName}</p>
-                      <div className="mt-4">
-                        <p className="text-[10px] font-bold text-blue-900/40 uppercase tracking-widest mb-1">GCash Number</p>
-                        <p className="font-display text-4xl font-medium tracking-tighter text-blue-600">{PAYMENT_METHODS.gcash.mobileNumber}</p>
-                      </div>
-                    </div>
-                    <button 
-                      type="button"
-                      onClick={openGCash}
-                      className="w-full bg-blue-600 text-white py-4 rounded-full font-bold uppercase text-xs tracking-widest flex items-center justify-center space-x-2 shadow-xl shadow-blue-600/20"
-                    >
-                      <Smartphone size={18} />
-                      <span>Open GCash App</span>
-                    </button>
-                  </motion.div>
-                ) : (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-6 bg-denim-50 border border-denim-100 rounded-3xl space-y-6">
-                    <div>
-                      <p className="text-[10px] font-bold text-denim-900/40 uppercase tracking-widest mb-1">Bank</p>
-                      <p className="font-bold text-lg text-denim-900">{PAYMENT_METHODS.bank.name}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-denim-900/40 uppercase tracking-widest mb-1">Account Name</p>
-                      <p className="font-bold text-lg text-denim-900">{PAYMENT_METHODS.bank.accountName}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-denim-900/40 uppercase tracking-widest mb-1">Account Number</p>
-                      <p className="font-display text-3xl font-medium tracking-tight text-denim-900">{PAYMENT_METHODS.bank.accountNumber}</p>
-                    </div>
-                  </motion.div>
-                )}
 
                 <div className="mt-12">
                    <label className="block text-[10px] font-bold text-denim-900/30 uppercase tracking-[0.2em] mb-4 px-2">Upload Proof of Payment</label>
