@@ -76,12 +76,18 @@ app.post("/api/orders", async (req: Request, res: Response) => {
     const orderId = `DD-${nextCount}`;
 
     // Map frontend order fields to exact database columns
-    const capItem = orderData.items?.find((item: any) => 
-      item.name?.toLowerCase().includes("cap") || item.id === "cap"
-    );
-    const umbrellaItem = orderData.items?.find((item: any) => 
-      item.name?.toLowerCase().includes("umbrella") || item.id === "umbrella"
-    );
+    let cap_qty = 0;
+    let umbrella_qty = 0;
+    if (orderData.items && Array.isArray(orderData.items)) {
+      for (const item of orderData.items) {
+        const nameLower = (item.name || "").toLowerCase();
+        if (nameLower.includes("cap") || item.id === "cap" || item.id === "running-cap") {
+          cap_qty += Number(item.quantity) || 0;
+        } else if (nameLower.includes("umbrella") || item.id === "umbrella") {
+          umbrella_qty += Number(item.quantity) || 0;
+        }
+      }
+    }
 
     const supabasePayload = {
       order_id: orderId,
@@ -91,8 +97,8 @@ app.post("/api/orders", async (req: Request, res: Response) => {
       delivery_option: orderData.delivery_option || orderData.deliveryOption || "claim",
       delivery_address: orderData.address || "N/A (Claim on Event)",
       notes: orderData.notes || "",
-      cap_qty: capItem ? capItem.quantity : 0,
-      umbrella_qty: umbrellaItem ? umbrellaItem.quantity : 0,
+      cap_qty,
+      umbrella_qty,
       total_amount: orderData.total_amount || 0,
       payment_method: orderData.payment_method || "",
       payment_proof_url: orderData.proof_url || "",
