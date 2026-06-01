@@ -62,8 +62,15 @@ export const PAYMENT_METHODS = {
     bankCode: "010419995"
   },
   gcash: {
-    accountName: "Tara Marie Mosqueda",
+    accountName: "Tara Marie Lim Mosqueda",
     mobileNumber: "0917 154 4961"
+  }
+};
+
+export const MERCH_PAYMENT_METHODS = {
+  gcash: {
+    accountName: "Reina Marie Durban",
+    mobileNumber: "0917 710 5309"
   }
 };
 
