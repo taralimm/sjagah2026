@@ -259,7 +259,7 @@ export default function Merch() {
               </h1>
               <p className="text-denim-900/60 max-w-2xl mx-auto font-light leading-relaxed">
                 Commemorative pre-order collection for the upcoming 2026 Grand Alumnae Homecoming event. <br />
-                <span className="text-[10px] text-denim-900/40 uppercase tracking-widest font-bold block mt-2">(Not affiliated with official SJA school stores • Organised by Alumni Host Batches)</span>
+                <span className="text-[10px] text-denim-900/40 uppercase tracking-widest font-bold block mt-2">(Disclaimer: Not affiliated with any official ASJ school stores • Organised by the Grand Alumni Homecoming 2026 Host Batches)</span>
               </p>
             </header>
 
