@@ -496,7 +496,7 @@ export default function Merch() {
                 ) : (
                   <>
                     <CheckCircle2 size={18} />
-                    <span>Complete Preorder</span>
+                    <span>Complete Order</span>
                   </>
                 )}
               </button>
