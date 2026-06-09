@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PAYMENT_METHODS, MERCH_PAYMENT_METHODS } from "../constants";
+// @ts-ignore
+import sjaShirtImage from "../assets/images/sja_monogram_shirt_1780966648233.png";
 
 // Types
 interface Product {
@@ -35,6 +37,13 @@ interface CartItem extends Product {
 }
 
 const PRODUCTS: Product[] = [
+  {
+    id: "monogram-shirt",
+    name: "SJA Monogram Shirt",
+    price: 500,
+    description: "Premium heavyweight white cotton crewneck t-shirt featuring a stylized vertical navy blue alignment of interlocking SJA monogram letters",
+    image: "/merch-shirt.jpg"
+  },
   {
     id: "cap",
     name: "SJA Baseball Cap",
@@ -496,7 +505,7 @@ export default function Merch() {
                 ) : (
                   <>
                     <CheckCircle2 size={18} />
-                    <span>Complete Order</span>
+                    <span>Complete Preorder</span>
                   </>
                 )}
               </button>
