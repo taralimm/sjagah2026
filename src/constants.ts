@@ -69,8 +69,8 @@ export const PAYMENT_METHODS = {
 
 export const MERCH_PAYMENT_METHODS = {
   gcash: {
-    accountName: "Reina Marie Durban",
-    mobileNumber: "0917 710 5309"
+    accountName: "Roda Manayaga",
+    mobileNumber: "0917 126 0302"
   }
 };
 
