@@ -30,6 +30,7 @@ interface Product {
   price: number;
   description: string;
   image: string;
+  soldOut?: boolean;
 }
 
 interface CartItem extends Product {
@@ -40,9 +41,9 @@ const PRODUCTS: Product[] = [
   {
     id: "monogram-shirt",
     name: "SJA Shirt",
-    price: 350,
-    description: "Premium quality high polyester fabric in sublimized print, featuring a stylized vertical navy blue alignment of SJA letters",
-    image: "/merch-shirt.jpg"
+    price: 500,
+    description: "Premium heavyweight white cotton crewneck t-shirt featuring a stylized vertical navy blue alignment of interlocking SJA letters",
+    image: sjaShirtImage
   },
   {
     id: "cap",
@@ -56,7 +57,8 @@ const PRODUCTS: Product[] = [
     name: "SJA Running Cap",
     price: 500,
     description: "Lightweight, breathable dry-fit running cap with SJA logo",
-    image: "/SJA Merch Running Cap.jpg"
+    image: "/SJA Merch Running Cap.jpg",
+    soldOut: true
   },
   {
     id: "umbrella",
@@ -65,6 +67,16 @@ const PRODUCTS: Product[] = [
     description: "Navy blue J type umbrella with SJA logo",
     image: "/SJA Merch Umbrella.jpg"
   }
+];
+
+const SHIRT_SIZES = [
+  { value: "XS", label: "Men's XS (Width: 38\", Length: 27\")" },
+  { value: "S", label: "Men's Small (Width: 40\", Length: 28\")" },
+  { value: "M", label: "Men's Medium (Width: 42\", Length: 29\")" },
+  { value: "L", label: "Men's Large (Width: 44\", Length: 30\")" },
+  { value: "XL", label: "Men's XL (Width: 46\", Length: 31\")" },
+  { value: "2XL", label: "Men's 2XL (Width: 48\", Length: 32.5\")" },
+  { value: "3XL", label: "Men's 3XL (Width: 50\", Length: 33\")" }
 ];
 
 type View = "catalog" | "checkout" | "success";
@@ -82,8 +94,17 @@ export default function Merch() {
     deliveryOption: "claim", // 'deliver' | 'claim'
     address: "",
     notes: "",
-    paymentMethod: "gcash" // 'gcash' | 'bank'
+    paymentMethod: "gcash", // 'gcash' | 'bank'
+    shirtSize: ""
   });
+
+  const hasShirtInCart = useMemo(() => {
+    return cart.some(item => 
+      item.id.toLowerCase().includes("shirt") || 
+      item.name.toLowerCase().includes("shirt") ||
+      item.description.toLowerCase().includes("shirt")
+    );
+  }, [cart]);
   
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -153,16 +174,37 @@ export default function Merch() {
       const { url: proofUrl } = await uploadRes.json();
 
       // 2. Submit order
+      const finalItems = cart.map(item => {
+        const isShirt = item.id.toLowerCase().includes("shirt") || 
+                        item.name.toLowerCase().includes("shirt") || 
+                        item.description.toLowerCase().includes("shirt");
+        if (isShirt && formData.shirtSize) {
+          // Find standard size label
+          const sizeObj = SHIRT_SIZES.find(s => s.value === formData.shirtSize);
+          const sizeLabel = sizeObj ? sizeObj.label : formData.shirtSize;
+          return {
+            name: `${item.name} (${sizeLabel})`,
+            quantity: item.quantity,
+            price: item.price
+          };
+        }
+        return { name: item.name, quantity: item.quantity, price: item.price };
+      });
+
+      const finalNotes = hasShirtInCart && formData.shirtSize
+        ? `T-Shirt Size: ${SHIRT_SIZES.find(s => s.value === formData.shirtSize)?.label || formData.shirtSize}. ${formData.notes}`
+        : formData.notes;
+
       const orderPayload = {
         customer_name: formData.fullName,
         mobile: formData.mobileNumber,
         facebook: formData.facebookName,
         delivery_option: formData.deliveryOption,
         address: formData.deliveryOption === "deliver" ? formData.address : "N/A (Claim on Event)",
-        notes: formData.notes,
+        notes: finalNotes,
         payment_method: formData.paymentMethod,
         proof_url: proofUrl,
-        items: cart.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
+        items: finalItems,
         total_amount: cartTotal
       };
 
@@ -276,14 +318,14 @@ export default function Merch() {
               {PRODUCTS.map((product) => (
                 <motion.div 
                   key={product.id}
-                  whileHover={{ y: -5 }}
-                  className="bg-white rounded-[3rem] overflow-hidden shadow-xl shadow-denim-900/5 border border-denim-900/5 group"
+                  whileHover={product.soldOut ? {} : { y: -5 }}
+                  className={`bg-white rounded-[3rem] overflow-hidden shadow-xl shadow-denim-900/5 border border-denim-900/5 group ${product.soldOut ? 'opacity-80' : ''}`}
                 >
                   <div className="aspect-[4/3] bg-denim-100 relative overflow-hidden">
                     <img 
                       src={product.image} 
                       alt={product.name} 
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className={`w-full h-full object-cover transition-transform duration-500 ${product.soldOut ? '' : 'group-hover:scale-110'}`}
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = "https://placehold.co/800x600/1a233e/ffffff?text=" + product.name;
                       }}
@@ -293,6 +335,13 @@ export default function Merch() {
                         <span className="font-display font-bold text-denim-900">₱{product.price.toLocaleString()}</span>
                       </div>
                     </div>
+                    {product.soldOut && (
+                      <div className="absolute inset-0 bg-denim-900/40 backdrop-blur-[1px] flex items-center justify-center">
+                        <span className="bg-red-600/90 text-white font-sans font-bold text-xs uppercase tracking-widest px-5 py-2.5 rounded-full shadow-lg">
+                          Sold Out
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="p-10">
                     <h3 className="font-serif text-2xl font-bold text-denim-900 mb-3 italic">{product.name}</h3>
@@ -300,11 +349,22 @@ export default function Merch() {
                       {product.description}
                     </p>
                     <button 
-                      onClick={() => addToCart(product)}
-                      className="w-full bg-denim-900 text-ivory py-4 rounded-full font-bold uppercase text-xs tracking-widest flex items-center justify-center space-x-2 hover:bg-gold transition-all"
+                      onClick={() => !product.soldOut && addToCart(product)}
+                      disabled={product.soldOut}
+                      className={`w-full py-4 rounded-full font-bold uppercase text-xs tracking-widest flex items-center justify-center space-x-2 transition-all ${
+                        product.soldOut 
+                          ? 'bg-denim-900/10 text-denim-900/40 cursor-not-allowed border border-denim-900/5' 
+                          : 'bg-denim-900 text-ivory hover:bg-gold cursor-pointer'
+                      }`}
                     >
-                      <Plus size={16} />
-                      <span>Add to Cart</span>
+                      {product.soldOut ? (
+                        <span>Sold Out</span>
+                      ) : (
+                        <>
+                          <Plus size={16} />
+                          <span>Add to Cart</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </motion.div>
@@ -362,6 +422,34 @@ export default function Merch() {
                       onChange={e => setFormData({ ...formData, facebookName: e.target.value })}
                     />
                   </div>
+
+                  {hasShirtInCart && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0 }} 
+                      animate={{ opacity: 1, height: "auto" }}
+                      className="mt-6 pt-6 border-t border-denim-900/5 text-left"
+                    >
+                      <label className="block text-[10px] font-bold text-gold uppercase tracking-[0.2em] mb-2 px-2 font-semibold">
+                        Men's T-Shirt Size Selection
+                      </label>
+                      <select
+                        required={hasShirtInCart}
+                        className="w-full bg-ivory/50 border border-denim-900/10 rounded-2xl px-6 py-4 outline-none focus:border-gold/50 transition-colors cursor-pointer text-denim-900"
+                        value={formData.shirtSize}
+                        onChange={e => setFormData({ ...formData, shirtSize: e.target.value })}
+                      >
+                        <option value="" disabled>Choose Men's Size (Width x Length)</option>
+                        {SHIRT_SIZES.map(size => (
+                          <option key={size.value} value={size.value} className="text-denim-900 font-sans">
+                            {size.label}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="text-[10px] text-denim-900/40 mt-2 px-2 leading-relaxed">
+                        Sizes are based on standard Men's T-Shirt sizing. Please verify your width and length in inches.
+                      </p>
+                    </motion.div>
+                  )}
                 </div>
               </section>
 
