@@ -39,9 +39,9 @@ interface CartItem extends Product {
 const PRODUCTS: Product[] = [
   {
     id: "monogram-shirt",
-    name: "SJA Monogram Shirt",
+    name: "SJA Shirt",
     price: 350,
-    description: "Premium heavyweight white cotton crewneck t-shirt featuring a stylized vertical navy blue alignment of interlocking SJA monogram letters",
+    description: "T-shirt featuring a stylized vertical navy blue alignment of interlocking SJA monogram letters",
     image: "/merch-shirt.jpg"
   },
   {
