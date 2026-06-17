@@ -70,13 +70,13 @@ const PRODUCTS: Product[] = [
 ];
 
 const SHIRT_SIZES = [
-  { value: "XS", label: "Men's XS (Width Circumference: 38\", Length: 27\")" },
-  { value: "S", label: "Men's Small (Width Circumference: 40\", Length: 28\")" },
-  { value: "M", label: "Men's Medium (Width Circumference: 42\", Length: 29\")" },
-  { value: "L", label: "Men's Large (Width Circumference: 44\", Length: 30\")" },
-  { value: "XL", label: "Men's XL (Width Circumference: 46\", Length: 31\")" },
-  { value: "2XL", label: "Men's 2XL (Width Circumference: 48\", Length: 32.5\")" },
-  { value: "3XL", label: "Men's 3XL (Width Circumference: 50\", Length: 33\")" }
+  { value: "XS", label: "Men's XS (Width: 38\", Length: 27\")" },
+  { value: "S", label: "Men's Small (Width: 40\", Length: 28\")" },
+  { value: "M", label: "Men's Medium (Width: 42\", Length: 29\")" },
+  { value: "L", label: "Men's Large (Width: 44\", Length: 30\")" },
+  { value: "XL", label: "Men's XL (Width: 46\", Length: 31\")" },
+  { value: "2XL", label: "Men's 2XL (Width: 48\", Length: 32.5\")" },
+  { value: "3XL", label: "Men's 3XL (Width: 50\", Length: 33\")" }
 ];
 
 type View = "catalog" | "checkout" | "success";
@@ -439,7 +439,7 @@ export default function Merch() {
                         value={formData.shirtSize}
                         onChange={e => setFormData({ ...formData, shirtSize: e.target.value })}
                       >
-                        <option value="" disabled className="bg-white text-denim-900 font-sans">Choose Men's Size (Width x Length)</option>
+                        <option value="" disabled className="bg-white text-denim-900 font-sans">Choose Men's Size (Width Circumference x Length)</option>
                         {SHIRT_SIZES.map(size => (
                           <option key={size.value} value={size.value} className="bg-white text-denim-900 font-sans">
                             {size.label}
