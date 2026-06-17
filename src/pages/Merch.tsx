@@ -21,7 +21,7 @@ import {
 import { Link } from "react-router-dom";
 import { PAYMENT_METHODS, MERCH_PAYMENT_METHODS } from "../constants";
 // @ts-ignore
-import sjaShirtImage from "../assets/images/sja_monogram_shirt_1780966648233.png";
+import sjaShirtImage from "../images/merch-shirt.jpg";
 
 // Types
 interface Product {
