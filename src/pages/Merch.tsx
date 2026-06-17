@@ -20,8 +20,8 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PAYMENT_METHODS, MERCH_PAYMENT_METHODS } from "../constants";
-// @ts-ignore
-import sjaShirtImage from "../images/merch-shirt.jpg";
+// Dynamic image path reference to prevent build errors on Vercel when the image file is not tracked in Git
+const sjaShirtImage = "/merch-shirt.jpg";
 
 // Types
 interface Product {
@@ -40,9 +40,9 @@ interface CartItem extends Product {
 const PRODUCTS: Product[] = [
   {
     id: "monogram-shirt",
-    name: "SJA Shirt",
-    price: 350,
-    description: "Premium heavyweight white cotton crewneck t-shirt featuring a stylized vertical navy blue alignment of interlocking SJA letters",
+    name: "SJA Monogram Shirt",
+    price: 500,
+    description: "Premium heavyweight white cotton crewneck t-shirt featuring a stylized vertical navy blue alignment of interlocking SJA monogram letters",
     image: sjaShirtImage
   },
   {
@@ -57,7 +57,7 @@ const PRODUCTS: Product[] = [
     name: "SJA Running Cap",
     price: 500,
     description: "Lightweight, breathable dry-fit running cap with SJA logo",
-    image: "/SJA Running Cap.jpg",
+    image: "/SJA running cap.png",
     soldOut: true
   },
   {
@@ -110,6 +110,14 @@ export default function Merch() {
   const [uploading, setUploading] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [selectedShirtSize, setSelectedShirtSize] = useState<string>("M");
+
+  // Automatically sync form shirt size when selected size or cart status updates
+  useEffect(() => {
+    if (hasShirtInCart) {
+      setFormData(prev => ({ ...prev, shirtSize: selectedShirtSize }));
+    }
+  }, [hasShirtInCart, selectedShirtSize]);
 
   const cartTotal = useMemo(() => 
     cart.reduce((sum, item) => sum + item.price * item.quantity, 0), 
@@ -118,13 +126,17 @@ export default function Merch() {
 
   const addToCart = (product: Product) => {
     setCart(prev => {
-      const existing = prev.find(item => item.id === product.id);
+      const isShirt = product.id === "monogram-shirt";
+      const cartId = isShirt ? `${product.id}-${selectedShirtSize}` : product.id;
+      const displayName = isShirt ? `${product.name} (${selectedShirtSize})` : product.name;
+
+      const existing = prev.find(item => item.id === cartId);
       if (existing) {
         return prev.map(item => 
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === cartId ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...product, id: cartId, name: displayName, quantity: 1 }];
     });
     setIsCartOpen(true);
   };
@@ -330,13 +342,13 @@ export default function Merch() {
                         (e.target as HTMLImageElement).src = "https://placehold.co/800x600/1a233e/ffffff?text=" + product.name;
                       }}
                     />
-                    <div className="absolute top-6 left-6">
+                    <div className="absolute top-6 left-6 z-10">
                       <div className="bg-white/90 backdrop-blur px-4 py-2 rounded-full shadow-lg">
                         <span className="font-display font-bold text-denim-900">₱{product.price.toLocaleString()}</span>
                       </div>
                     </div>
                     {product.soldOut && (
-                      <div className="absolute inset-0 bg-denim-900/40 backdrop-blur-[1px] flex items-center justify-center">
+                      <div className="absolute inset-0 z-20 bg-denim-900/40 backdrop-blur-[1px] flex items-center justify-center">
                         <span className="bg-red-600/90 text-white font-sans font-bold text-xs uppercase tracking-widest px-5 py-2.5 rounded-full shadow-lg">
                           Sold Out
                         </span>
@@ -345,9 +357,29 @@ export default function Merch() {
                   </div>
                   <div className="p-10">
                     <h3 className="font-serif text-2xl font-bold text-denim-900 mb-3 italic">{product.name}</h3>
-                    <p className="text-denim-900/60 font-light text-sm mb-8 leading-relaxed">
+                    <p className="text-denim-900/60 font-light text-sm mb-6 leading-relaxed">
                       {product.description}
                     </p>
+
+                    {product.id === "monogram-shirt" && (
+                      <div className="mb-6 p-4 bg-denim-100/50 rounded-2xl border border-denim-900/5 text-left">
+                        <label className="block text-[10px] font-bold text-gold uppercase tracking-[0.2em] mb-2 px-1">
+                          Select Shirt Size:
+                        </label>
+                        <select
+                          className="w-full bg-white border border-denim-900/10 rounded-xl px-4 py-2.5 outline-none focus:border-gold/50 text-xs font-sans text-denim-900 cursor-pointer"
+                          value={selectedShirtSize}
+                          onChange={(e) => setSelectedShirtSize(e.target.value)}
+                        >
+                          {SHIRT_SIZES.map(size => (
+                            <option key={size.value} value={size.value} className="bg-white text-denim-900 font-sans">
+                              {size.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+
                     <button 
                       onClick={() => !product.soldOut && addToCart(product)}
                       disabled={product.soldOut}
@@ -434,13 +466,13 @@ export default function Merch() {
                       </label>
                       <select
                         required={hasShirtInCart}
-                        className="w-full bg-ivory/50 border border-denim-900/10 rounded-2xl px-6 py-4 outline-none focus:border-gold/50 transition-colors cursor-pointer text-denim-900"
+                        className="w-full bg-white border border-denim-900/10 rounded-2xl px-6 py-4 outline-none focus:border-gold/50 transition-colors cursor-pointer text-denim-900"
                         value={formData.shirtSize}
                         onChange={e => setFormData({ ...formData, shirtSize: e.target.value })}
                       >
-                        <option value="" disabled>Choose Men's Size (Width x Length)</option>
+                        <option value="" disabled className="bg-white text-denim-900 font-sans">Choose Men's Size (Width x Length)</option>
                         {SHIRT_SIZES.map(size => (
-                          <option key={size.value} value={size.value} className="text-denim-900 font-sans">
+                          <option key={size.value} value={size.value} className="bg-white text-denim-900 font-sans">
                             {size.label}
                           </option>
                         ))}
