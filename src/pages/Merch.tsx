@@ -42,7 +42,7 @@ const PRODUCTS: Product[] = [
     id: "monogram-shirt",
     name: "SJA Shirt",
     price: 350,
-    description: "Premium quality high polyester fabric in sublimized print t-shirt featuring a stylized vertical navy blue alignment of interlocking SJA letters",
+    description: "Premium quality high polyester fabric in sublimized print t-shirt featuring a stylized vertical navy blue alignment of SJA letters",
     image: sjaShirtImage
   },
   {
@@ -70,13 +70,13 @@ const PRODUCTS: Product[] = [
 ];
 
 const SHIRT_SIZES = [
-  { value: "XS", label: "Men's XS (Width: 38\", Length: 27\")" },
-  { value: "S", label: "Men's Small (Width: 40\", Length: 28\")" },
-  { value: "M", label: "Men's Medium (Width: 42\", Length: 29\")" },
-  { value: "L", label: "Men's Large (Width: 44\", Length: 30\")" },
-  { value: "XL", label: "Men's XL (Width: 46\", Length: 31\")" },
-  { value: "2XL", label: "Men's 2XL (Width: 48\", Length: 32.5\")" },
-  { value: "3XL", label: "Men's 3XL (Width: 50\", Length: 33\")" }
+  { value: "XS", label: "Men's XS (Width Circumference: 38\", Length: 27\")" },
+  { value: "S", label: "Men's Small (Width Circumference: 40\", Length: 28\")" },
+  { value: "M", label: "Men's Medium (Width Circumference: 42\", Length: 29\")" },
+  { value: "L", label: "Men's Large (Width Circumference: 44\", Length: 30\")" },
+  { value: "XL", label: "Men's XL (Width Circumference: 46\", Length: 31\")" },
+  { value: "2XL", label: "Men's 2XL (Width Circumference: 48\", Length: 32.5\")" },
+  { value: "3XL", label: "Men's 3XL (Width Circumference: 50\", Length: 33\")" }
 ];
 
 type View = "catalog" | "checkout" | "success";
@@ -110,14 +110,6 @@ export default function Merch() {
   const [uploading, setUploading] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [selectedShirtSize, setSelectedShirtSize] = useState<string>("M");
-
-  // Automatically sync form shirt size when selected size or cart status updates
-  useEffect(() => {
-    if (hasShirtInCart) {
-      setFormData(prev => ({ ...prev, shirtSize: selectedShirtSize }));
-    }
-  }, [hasShirtInCart, selectedShirtSize]);
 
   const cartTotal = useMemo(() => 
     cart.reduce((sum, item) => sum + item.price * item.quantity, 0), 
@@ -126,17 +118,13 @@ export default function Merch() {
 
   const addToCart = (product: Product) => {
     setCart(prev => {
-      const isShirt = product.id === "monogram-shirt";
-      const cartId = isShirt ? `${product.id}-${selectedShirtSize}` : product.id;
-      const displayName = isShirt ? `${product.name} (${selectedShirtSize})` : product.name;
-
-      const existing = prev.find(item => item.id === cartId);
+      const existing = prev.find(item => item.id === product.id);
       if (existing) {
         return prev.map(item => 
-          item.id === cartId ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      return [...prev, { ...product, id: cartId, name: displayName, quantity: 1 }];
+      return [...prev, { ...product, quantity: 1 }];
     });
     setIsCartOpen(true);
   };
@@ -357,28 +345,9 @@ export default function Merch() {
                   </div>
                   <div className="p-10">
                     <h3 className="font-serif text-2xl font-bold text-denim-900 mb-3 italic">{product.name}</h3>
-                    <p className="text-denim-900/60 font-light text-sm mb-6 leading-relaxed">
+                    <p className="text-denim-900/60 font-light text-sm mb-8 leading-relaxed">
                       {product.description}
                     </p>
-
-                    {product.id === "monogram-shirt" && (
-                      <div className="mb-6 p-4 bg-denim-100/50 rounded-2xl border border-denim-900/5 text-left">
-                        <label className="block text-[10px] font-bold text-gold uppercase tracking-[0.2em] mb-2 px-1">
-                          Select Shirt Size:
-                        </label>
-                        <select
-                          className="w-full bg-white border border-denim-900/10 rounded-xl px-4 py-2.5 outline-none focus:border-gold/50 text-xs font-sans text-denim-900 cursor-pointer"
-                          value={selectedShirtSize}
-                          onChange={(e) => setSelectedShirtSize(e.target.value)}
-                        >
-                          {SHIRT_SIZES.map(size => (
-                            <option key={size.value} value={size.value} className="bg-white text-denim-900 font-sans">
-                              {size.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
 
                     <button 
                       onClick={() => !product.soldOut && addToCart(product)}
