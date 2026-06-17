@@ -41,7 +41,7 @@ const PRODUCTS: Product[] = [
     id: "monogram-shirt",
     name: "SJA Shirt",
     price: 350,
-    description: "T-shirt featuring a stylized vertical navy blue alignment of SJA monogram letters",
+    description: "Premium quality high polyester fabric in sublimized print, featuring a stylized vertical navy blue alignment of SJA monogram letters",
     image: "/merch-shirt.jpg"
   },
   {
