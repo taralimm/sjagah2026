@@ -41,7 +41,7 @@ const PRODUCTS: Product[] = [
   {
     id: "monogram-shirt",
     name: "SJA Shirt",
-    price: 500,
+    price: 350,
     description: "Premium heavyweight white cotton crewneck t-shirt featuring a stylized vertical navy blue alignment of interlocking SJA letters",
     image: sjaShirtImage
   },
@@ -57,7 +57,7 @@ const PRODUCTS: Product[] = [
     name: "SJA Running Cap",
     price: 500,
     description: "Lightweight, breathable dry-fit running cap with SJA logo",
-    image: "/SJA Merch Running Cap.jpg",
+    image: "/SJA Running Cap.jpg",
     soldOut: true
   },
   {
