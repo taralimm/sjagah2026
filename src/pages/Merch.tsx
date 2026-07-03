@@ -35,12 +35,13 @@ interface Product {
 
 interface CartItem extends Product {
   quantity: number;
+  selectedSize?: string;
 }
 
 const PRODUCTS: Product[] = [
   {
     id: "monogram-shirt",
-    name: "SJA Shirt",
+    name: "SJA Monogram Shirt",
     price: 350,
     description: "Premium quality high polyester fabric in sublimized print t-shirt featuring a stylized vertical navy blue alignment of SJA letters",
     image: sjaShirtImage
@@ -94,8 +95,7 @@ export default function Merch() {
     deliveryOption: "claim", // 'deliver' | 'claim'
     address: "",
     notes: "",
-    paymentMethod: "gcash", // 'gcash' | 'bank'
-    shirtSize: ""
+    paymentMethod: "gcash" // 'gcash' | 'bank'
   });
 
   const hasShirtInCart = useMemo(() => {
@@ -118,13 +118,17 @@ export default function Merch() {
 
   const addToCart = (product: Product) => {
     setCart(prev => {
-      const existing = prev.find(item => item.id === product.id);
+      const isShirt = product.id === "monogram-shirt";
+      const defaultSize = "M";
+      const cartId = isShirt ? `${product.id}-${defaultSize}` : product.id;
+
+      const existing = prev.find(item => item.id === cartId);
       if (existing) {
         return prev.map(item => 
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === cartId ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...product, id: cartId, quantity: 1, ...(isShirt ? { selectedSize: defaultSize } : {}) }];
     });
     setIsCartOpen(true);
   };
@@ -137,6 +141,34 @@ export default function Merch() {
       }
       return item;
     }));
+  };
+
+  const updateItemSize = (id: string, newSize: string) => {
+    setCart(prev => {
+      const itemToUpdate = prev.find(item => item.id === id);
+      if (!itemToUpdate) return prev;
+
+      const isShirt = itemToUpdate.id.startsWith("monogram-shirt");
+      if (!isShirt) return prev;
+
+      const newId = `monogram-shirt-${newSize}`;
+
+      // If the new size item already exists in the cart, merge their quantities!
+      const existingNewSizeItem = prev.find(item => item.id === newId);
+      if (existingNewSizeItem && newId !== id) {
+        return prev.map(item => {
+          if (item.id === newId) {
+            return { ...item, quantity: item.quantity + itemToUpdate.quantity };
+          }
+          return item;
+        }).filter(item => item.id !== id);
+      }
+
+      // Otherwise, just update the size and the id of the item
+      return prev.map(item => 
+        item.id === id ? { ...item, id: newId, selectedSize: newSize } : item
+      );
+    });
   };
 
   const removeFromCart = (id: string) => {
@@ -175,13 +207,11 @@ export default function Merch() {
 
       // 2. Submit order
       const finalItems = cart.map(item => {
-        const isShirt = item.id.toLowerCase().includes("shirt") || 
-                        item.name.toLowerCase().includes("shirt") || 
-                        item.description.toLowerCase().includes("shirt");
-        if (isShirt && formData.shirtSize) {
+        const isShirt = item.id.startsWith("monogram-shirt");
+        if (isShirt && item.selectedSize) {
           // Find standard size label
-          const sizeObj = SHIRT_SIZES.find(s => s.value === formData.shirtSize);
-          const sizeLabel = sizeObj ? sizeObj.label : formData.shirtSize;
+          const sizeObj = SHIRT_SIZES.find(s => s.value === item.selectedSize);
+          const sizeLabel = sizeObj ? sizeObj.label : item.selectedSize;
           return {
             name: `${item.name} (${sizeLabel})`,
             quantity: item.quantity,
@@ -191,8 +221,15 @@ export default function Merch() {
         return { name: item.name, quantity: item.quantity, price: item.price };
       });
 
-      const finalNotes = hasShirtInCart && formData.shirtSize
-        ? `T-Shirt Size: ${SHIRT_SIZES.find(s => s.value === formData.shirtSize)?.label || formData.shirtSize}. ${formData.notes}`
+      const shirtItems = cart.filter(item => item.id.startsWith("monogram-shirt"));
+      const sizeNotes = shirtItems.map(item => {
+        const sizeObj = SHIRT_SIZES.find(s => s.value === item.selectedSize);
+        const sizeLabel = sizeObj ? sizeObj.label : item.selectedSize;
+        return `${item.quantity}x Size ${sizeLabel}`;
+      }).join(", ");
+
+      const finalNotes = sizeNotes
+        ? `T-Shirt Sizes: ${sizeNotes}. ${formData.notes}`
         : formData.notes;
 
       const orderPayload = {
@@ -423,34 +460,6 @@ export default function Merch() {
                       onChange={e => setFormData({ ...formData, facebookName: e.target.value })}
                     />
                   </div>
-
-                  {hasShirtInCart && (
-                    <motion.div 
-                      initial={{ opacity: 0, height: 0 }} 
-                      animate={{ opacity: 1, height: "auto" }}
-                      className="mt-6 pt-6 border-t border-denim-900/5 text-left"
-                    >
-                      <label className="block text-[10px] font-bold text-gold uppercase tracking-[0.2em] mb-2 px-2 font-semibold">
-                        Men's T-Shirt Size Selection
-                      </label>
-                      <select
-                        required={hasShirtInCart}
-                        className="w-full bg-white border border-denim-900/10 rounded-2xl px-6 py-4 outline-none focus:border-gold/50 transition-colors cursor-pointer text-denim-900"
-                        value={formData.shirtSize}
-                        onChange={e => setFormData({ ...formData, shirtSize: e.target.value })}
-                      >
-                        <option value="" disabled className="bg-white text-denim-900 font-sans">Choose Men's Size (Width Circumference x Length)</option>
-                        {SHIRT_SIZES.map(size => (
-                          <option key={size.value} value={size.value} className="bg-white text-denim-900 font-sans">
-                            {size.label}
-                          </option>
-                        ))}
-                      </select>
-                      <p className="text-[10px] text-denim-900/40 mt-2 px-2 leading-relaxed">
-                        Sizes are based on standard Men's T-Shirt sizing. Please verify your width and length in inches.
-                      </p>
-                    </motion.div>
-                  )}
                 </div>
               </section>
 
@@ -645,6 +654,24 @@ export default function Merch() {
                         </div>
                         <div className="flex-grow">
                           <h4 className="font-bold text-denim-900 text-sm uppercase tracking-tight">{item.name}</h4>
+                          
+                          {item.id.startsWith("monogram-shirt") && item.selectedSize && (
+                            <div className="mt-1.5 mb-2 flex items-center space-x-2">
+                              <span className="text-[10px] font-bold text-denim-900/40 uppercase tracking-wider">Size:</span>
+                              <select
+                                className="bg-denim-100 hover:bg-denim-200 text-denim-900 font-sans text-xs font-semibold px-2.5 py-1 rounded-lg cursor-pointer outline-none transition-colors border-none"
+                                value={item.selectedSize}
+                                onChange={(e) => updateItemSize(item.id, e.target.value)}
+                              >
+                                {SHIRT_SIZES.map(size => (
+                                  <option key={size.value} value={size.value} className="bg-white text-denim-900">
+                                    {size.value} - {size.label.includes('(') ? size.label.substring(size.label.indexOf('(')) : size.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+
                           <p className="text-gold font-display font-bold text-lg mb-3">₱{(item.price * item.quantity).toLocaleString()}</p>
                           <div className="flex items-center space-x-4">
                             <div className="flex items-center border border-denim-900/5 rounded-full overflow-hidden h-8">
