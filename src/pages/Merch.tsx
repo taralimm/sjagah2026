@@ -110,17 +110,18 @@ export default function Merch() {
   const [uploading, setUploading] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [selectedCatalogShirtSize, setSelectedCatalogShirtSize] = useState<string>("M");
 
   const cartTotal = useMemo(() => 
     cart.reduce((sum, item) => sum + item.price * item.quantity, 0), 
     [cart]
   );
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: Product, selectedSize?: string) => {
     setCart(prev => {
       const isShirt = product.id === "monogram-shirt";
-      const defaultSize = "M";
-      const cartId = isShirt ? `${product.id}-${defaultSize}` : product.id;
+      const sizeToUse = isShirt ? (selectedSize || "M") : undefined;
+      const cartId = isShirt ? `${product.id}-${sizeToUse}` : product.id;
 
       const existing = prev.find(item => item.id === cartId);
       if (existing) {
@@ -128,7 +129,7 @@ export default function Merch() {
           item.id === cartId ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      return [...prev, { ...product, id: cartId, quantity: 1, ...(isShirt ? { selectedSize: defaultSize } : {}) }];
+      return [...prev, { ...product, id: cartId, quantity: 1, ...(isShirt ? { selectedSize: sizeToUse } : {}) }];
     });
     setIsCartOpen(true);
   };
@@ -382,12 +383,39 @@ export default function Merch() {
                   </div>
                   <div className="p-10">
                     <h3 className="font-serif text-2xl font-bold text-denim-900 mb-3 italic">{product.name}</h3>
-                    <p className="text-denim-900/60 font-light text-sm mb-8 leading-relaxed">
+                    <p className="text-denim-900/60 font-light text-sm mb-6 leading-relaxed">
                       {product.description}
                     </p>
 
+                    {product.id === "monogram-shirt" && (
+                      <div className="mb-6 text-left">
+                        <label className="block text-[10px] font-bold text-gold uppercase tracking-[0.2em] mb-2.5 px-1 font-semibold">
+                          Select Size:
+                        </label>
+                        <div className="flex flex-wrap gap-1.5 mb-2">
+                          {SHIRT_SIZES.map(size => (
+                            <button
+                              key={size.value}
+                              type="button"
+                              onClick={() => setSelectedCatalogShirtSize(size.value)}
+                              className={`h-9 px-3.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                                selectedCatalogShirtSize === size.value
+                                  ? "bg-gold border-gold text-white shadow-md shadow-gold/20"
+                                  : "border-denim-900/10 hover:border-denim-900/30 text-denim-900/80 bg-white"
+                              }`}
+                            >
+                              {size.value}
+                            </button>
+                          ))}
+                        </div>
+                        <p className="text-[10px] text-denim-900/40 px-1 italic">
+                          {SHIRT_SIZES.find(s => s.value === selectedCatalogShirtSize)?.label}
+                        </p>
+                      </div>
+                    )}
+
                     <button 
-                      onClick={() => !product.soldOut && addToCart(product)}
+                      onClick={() => !product.soldOut && addToCart(product, product.id === "monogram-shirt" ? selectedCatalogShirtSize : undefined)}
                       disabled={product.soldOut}
                       className={`w-full py-4 rounded-full font-bold uppercase text-xs tracking-widest flex items-center justify-center space-x-2 transition-all ${
                         product.soldOut 
