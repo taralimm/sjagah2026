@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { ArrowRight, Calendar, MapPin, Sparkles, Facebook, Heart, Diamond, Info, MessageSquare } from "lucide-react";
+import { ArrowRight, Calendar, MapPin, Sparkles, Facebook, Heart, Diamond, MessageSquare } from "lucide-react";
 import { Link } from "react-router-dom";
 import { CONTACT_FACEBOOK, REGISTRATION_URL } from "../constants";
 
@@ -17,7 +17,7 @@ export default function Home() {
   return (
     <div className="bg-ivory selection:bg-denim-900 selection:text-white">
       {/* Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center justify-center pt-20 px-4">
+      <section className="relative min-h-[85vh] flex items-center justify-center pt-32 sm:pt-36 md:pt-40 px-4">
         <div className="absolute inset-0 z-0 overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-ivory via-ivory/80 to-ivory"></div>
           {/* Subtle noise/texture or just clean background */}
@@ -198,12 +198,17 @@ export default function Home() {
                     Every <span className="font-serif italic text-gold">Josephinian</span><br /> counts.
                  </h2>
                  <p className="text-ivory/60 mb-10 max-w-sm relative z-10 font-light">Join us in celebrating the shared heritage of the Josephinian spirit. Don't wait—register today.</p>
-                 <a 
-                   href={REGISTRATION_URL}
-                   className="bg-gold hover:bg-white hover:text-denim-900 text-denim-900 w-fit px-8 py-4 rounded-full font-bold uppercase text-xs tracking-widest transition-all relative z-10 shadow-xl shadow-black/20"
-                 >
-                    Register for the event
-                 </a>
+                 <div className="flex flex-col sm:flex-row sm:items-center gap-6 relative z-10">
+                   <a 
+                     href={REGISTRATION_URL}
+                     className="bg-gold hover:bg-white hover:text-denim-900 text-denim-900 w-fit px-8 py-4 rounded-full font-bold uppercase text-xs tracking-widest transition-all shadow-xl shadow-black/20 shrink-0"
+                   >
+                      Register for the event
+                   </a>
+                   <p className="text-xs text-gold/90 font-medium max-w-xs leading-relaxed">
+                     Online registration closes <span className="font-bold underline text-white">July 15</span>. Walk-in registrations open <span className="font-bold underline text-white">July 18 at 3:00 PM</span>.
+                   </p>
+                 </div>
               </div>
 
               {/* Sponsorship Link */}
