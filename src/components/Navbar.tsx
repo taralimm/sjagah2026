@@ -13,12 +13,25 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed w-full z-50 bg-ivory/80 backdrop-blur-md border-b border-denim-900/5">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="fixed w-full z-50 top-0 left-0 flex flex-col">
+      {/* Top Prominent Announcement Banner */}
+      <div className="bg-denim-900 text-gold text-center py-2.5 px-4 text-[10px] sm:text-xs font-bold uppercase tracking-wider flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-4 shadow-sm border-b border-gold/10">
+        <div className="flex items-center gap-1.5 text-white">
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-gold animate-pulse"></span>
+          <span>Online Registration closes: <span className="text-gold font-extrabold">July 15</span></span>
+        </div>
+        <span className="hidden sm:inline text-gold/30">|</span>
+        <div className="flex items-center gap-1.5 text-white">
+          <span>Walk-in registration on event day: <span className="text-gold font-extrabold">July 18 (Starts 3:00 PM)</span></span>
+        </div>
+      </div>
+
+      <nav className="w-full bg-ivory/80 backdrop-blur-md border-b border-denim-900/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-3 group">
-              <img src="/Necktie Logo.png" alt="SJA Logo" className="h-10 w-10 object-contain group-hover:scale-105 transition-transform" />
+              <img src="/image_6.png" alt="SJA Logo" className="h-10 w-10 object-contain group-hover:scale-105 transition-transform" />
               <span className="font-serif text-lg font-bold tracking-tight text-denim-900 hidden sm:block uppercase">
                 SJA Homecoming 2026
               </span>
@@ -85,5 +98,6 @@ export default function Navbar() {
         </div>
       )}
     </nav>
+  </header>
   );
 }
