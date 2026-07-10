@@ -278,8 +278,20 @@ export default function Admin() {
                          </div>
                        </div>
                        <div>
+                        {selectedOrder.facebook && (
+                          <div className="mb-4">
+                            <p className="text-[10px] font-bold text-denim-900/30 uppercase mb-1">Facebook Profile</p>
+                            <p className="text-sm font-bold text-denim-900">{selectedOrder.facebook}</p>
+                          </div>
+                        )}
                          <p className="text-[10px] font-bold text-denim-900/30 uppercase mb-1">Delivery / Address</p>
                          <p className="text-sm font-medium text-denim-900/70">{selectedOrder.address}</p>
+                         {selectedOrder.notes && (
+                           <div className="bg-gold/5 border border-gold/10 p-4 rounded-2xl mt-4">
+                             <p className="text-[10px] font-bold text-gold uppercase mb-1">Notes / Instructions</p>
+                             <p className="text-xs font-semibold text-denim-900 leading-relaxed whitespace-pre-line">{selectedOrder.notes}</p>
+                           </div>
+                         )}
                        </div>
                        <div>
                          <p className="text-[10px] font-bold text-denim-900/30 uppercase mb-1">Items</p>
@@ -291,6 +303,20 @@ export default function Admin() {
                              </li>
                            ))}
                          </ul>
+                          {selectedOrder.notes && selectedOrder.notes.toLowerCase().includes("t-shirt") && (
+                            <div className="bg-amber-50 border border-amber-200/50 p-4 rounded-2xl mt-4">
+                              <p className="text-[10px] font-bold text-amber-800 uppercase mb-1 flex items-center gap-1.5">
+                                <span className="w-2 h-2 bg-amber-500 rounded-full animate-ping text-amber-500"></span>
+                                Ordered Shirt Sizes
+                              </p>
+                              <p className="text-xs font-semibold text-amber-950 leading-relaxed">
+                                {(() => {
+                                  const match = selectedOrder.notes.match(/T-Shirt Sizes?:\s*([^.]+)/i);
+                                  return match ? match[1].trim() : "See notes below";
+                                })()}
+                              </p>
+                            </div>
+                          )}
                        </div>
                     </div>
 
