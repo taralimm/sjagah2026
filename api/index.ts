@@ -173,6 +173,47 @@ app.post("/api/upload-proof", (req, res, next) => {
   getUpload().single("proof")(req, res, next);
 }, handleUpload);
 
+// Helper to map order row from Supabase to frontend format, reconstructing modern shirt items dynamically
+const mapOrderToFrontend = (o: any) => {
+  const items = [];
+  if (o.cap_qty > 0) {
+    items.push({ name: "SJA Baseball Cap", quantity: o.cap_qty, price: 500 });
+  }
+  if (o.umbrella_qty > 0) {
+    items.push({ name: "SJA J-Type Umbrella", quantity: o.umbrella_qty, price: 500 });
+  }
+
+  // Calculate dynamic shirt quantities
+  const expectedNonShirt = (Number(o.cap_qty || 0) * 500) + (Number(o.umbrella_qty || 0) * 500);
+  const shirt_qty = Math.round(Math.max(0, (Number(o.total_amount || 0) - expectedNonShirt) / 350));
+  if (shirt_qty > 0) {
+    let sizeStr = "";
+    const sizeMatch = o.notes ? o.notes.match(/T-Shirt Sizes?:\s*([^.]+)/i) : null;
+    if (sizeMatch && sizeMatch[1]) {
+      // Clean up "Size" word if redundant, but keep quantity
+      const rawSize = sizeMatch[1].trim().replace(/\bSize\s+/gi, "");
+      sizeStr = ` (${rawSize})`;
+    }
+    items.push({ name: `SJA Monogram Shirt${sizeStr}`, quantity: shirt_qty, price: 350 });
+  }
+
+  return {
+    id: o.id,
+    order_id: o.order_id,
+    customer_name: o.full_name,
+    mobile: o.mobile_number,
+    facebook: o.facebook_profile,
+    delivery_option: o.delivery_option,
+    total_amount: o.total_amount,
+    status: o.order_status,
+    created_at: o.created_at,
+    proof_url: o.payment_proof_url,
+    items,
+    address: o.delivery_address,
+    notes: o.notes
+  };
+};
+
 // Admin routes
 app.get("/api/admin/orders", async (req: Request, res: Response) => {
   const authHeader = req.headers.authorization;
@@ -195,32 +236,7 @@ app.get("/api/admin/orders", async (req: Request, res: Response) => {
     
     if (error) throw error;
 
-    // Map the database rows to the names expected by the frontend Admin component
-    const mappedOrders = (data || []).map((o: any) => {
-      const items = [];
-      if (o.cap_qty > 0) {
-        items.push({ name: "SJA Baseball Cap", quantity: o.cap_qty, price: 500 });
-      }
-      if (o.umbrella_qty > 0) {
-        items.push({ name: "SJA J-Type Umbrella", quantity: o.umbrella_qty, price: 500 });
-      }
-
-      return {
-        id: o.id,
-        order_id: o.order_id,
-        customer_name: o.full_name,
-        mobile: o.mobile_number,
-        facebook: o.facebook_profile,
-        delivery_option: o.delivery_option,
-        total_amount: o.total_amount,
-        status: o.order_status,
-        created_at: o.created_at,
-        proof_url: o.payment_proof_url,
-        items,
-        address: o.delivery_address,
-        notes: o.notes
-      };
-    });
+    const mappedOrders = (data || []).map(mapOrderToFrontend);
 
     res.json(mappedOrders);
   } catch (error: any) {
@@ -252,30 +268,7 @@ app.patch("/api/admin/orders/:id", async (req: Request, res: Response) => {
 
     if (error) throw error;
     
-    const o = data[0];
-    const items = [];
-    if (o.cap_qty > 0) {
-      items.push({ name: "SJA Baseball Cap", quantity: o.cap_qty, price: 500 });
-    }
-    if (o.umbrella_qty > 0) {
-      items.push({ name: "SJA J-Type Umbrella", quantity: o.umbrella_qty, price: 500 });
-    }
-
-    const mapped = {
-      id: o.id,
-      order_id: o.order_id,
-      customer_name: o.full_name,
-      mobile: o.mobile_number,
-      facebook: o.facebook_profile,
-      delivery_option: o.delivery_option,
-      total_amount: o.total_amount,
-      status: o.order_status,
-      created_at: o.created_at,
-      proof_url: o.payment_proof_url,
-      items,
-      address: o.delivery_address,
-      notes: o.notes
-    };
+    const mapped = mapOrderToFrontend(data[0]);
 
     res.json(mapped);
   } catch (error: any) {
