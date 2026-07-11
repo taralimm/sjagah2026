@@ -66,14 +66,15 @@ const PRODUCTS: Product[] = [
     name: "SJA J-Type Umbrella",
     price: 500,
     description: "Navy blue J type umbrella with SJA logo",
-    image: "/SJA Merch Umbrella.jpg"
+    image: "/SJA Merch Umbrella.jpg",
+    soldOut: true
   }
 ];
 
 const SHIRT_SIZES = [
   { value: "XS", label: "Men's XS (Width: 38\", Length: 27\")" },
   { value: "S", label: "Men's Small (Width: 40\", Length: 28\")" },
-  { value: "M", label: "Men's Medium (Width: 42\", Length: 29\")" },
+  { value: "M", label: "Men's Medium (Width: 42\", Length: 29\")", soldOut: true },
   { value: "L", label: "Men's Large (Width: 44\", Length: 30\")" },
   { value: "XL", label: "Men's XL (Width: 46\", Length: 31\")" },
   { value: "2XL", label: "Men's 2XL (Width: 48\", Length: 32.5\")" },
@@ -110,7 +111,7 @@ export default function Merch() {
   const [uploading, setUploading] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [selectedCatalogShirtSize, setSelectedCatalogShirtSize] = useState<string>("M");
+  const [selectedCatalogShirtSize, setSelectedCatalogShirtSize] = useState<string>("L");
 
   const cartTotal = useMemo(() => 
     cart.reduce((sum, item) => sum + item.price * item.quantity, 0), 
@@ -281,7 +282,7 @@ export default function Merch() {
 
   if (view === "success") {
     return (
-      <div className="pt-32 pb-24 min-h-screen bg-ivory flex items-center justify-center px-4">
+      <div className="pt-40 pb-24 min-h-screen bg-ivory flex items-center justify-center px-4">
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -312,7 +313,7 @@ export default function Merch() {
   }
 
   return (
-    <div className="pt-24 pb-24 min-h-screen bg-ivory">
+    <div className="pt-36 pb-24 min-h-screen bg-ivory">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {view === 'catalog' ? (
@@ -397,11 +398,14 @@ export default function Merch() {
                             <button
                               key={size.value}
                               type="button"
-                              onClick={() => setSelectedCatalogShirtSize(size.value)}
+                              onClick={() => !size.soldOut && setSelectedCatalogShirtSize(size.value)}
+                              disabled={size.soldOut}
                               className={`h-9 px-3.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
-                                selectedCatalogShirtSize === size.value
-                                  ? "bg-gold border-gold text-white shadow-md shadow-gold/20"
-                                  : "border-denim-900/10 hover:border-denim-900/30 text-denim-900/80 bg-white"
+                                size.soldOut
+                                  ? "border-red-200 text-red-400 bg-red-50/30 line-through cursor-not-allowed opacity-50"
+                                  : selectedCatalogShirtSize === size.value
+                                    ? "bg-gold border-gold text-white shadow-md shadow-gold/20"
+                                    : "border-denim-900/10 hover:border-denim-900/30 text-denim-900/80 bg-white"
                               }`}
                             >
                               {size.value}
@@ -692,8 +696,8 @@ export default function Merch() {
                                 onChange={(e) => updateItemSize(item.id, e.target.value)}
                               >
                                 {SHIRT_SIZES.map(size => (
-                                  <option key={size.value} value={size.value} className="bg-white text-denim-900">
-                                    {size.value} - {size.label.includes('(') ? size.label.substring(size.label.indexOf('(')) : size.label}
+                                  <option key={size.value} value={size.value} disabled={size.soldOut} className="bg-white text-denim-900">
+                                    {size.value} - {size.label.includes('(') ? size.label.substring(size.label.indexOf('(')) : size.label}{size.soldOut ? " (Sold Out)" : ""}
                                   </option>
                                 ))}
                               </select>
