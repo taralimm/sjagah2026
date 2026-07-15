@@ -340,7 +340,7 @@ export default function Merch() {
                 Homecoming <span className="font-serif italic text-gold font-normal">Memorabilia.</span>
               </h1>
               <p className="text-denim-900/60 max-w-2xl mx-auto font-light leading-relaxed">
-                Commemorative collection for the upcoming 2026 Grand Alumnae Homecoming event. Online pre-orders are now closed. Remaining stocks will be available for purchase during the event. <br />
+                Commemorative collection for the upcoming 2026 Grand Alumni Homecoming event. Online pre-orders are now closed. Remaining stocks will be available for purchase during the event. <br />
                 <span className="text-[10px] text-denim-900/40 uppercase tracking-widest font-bold block mt-2">(Not affiliated with official SJA school stores • Organised by Alumni Host Batches)</span>
               </p>
             </header>
