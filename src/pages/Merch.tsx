@@ -51,7 +51,8 @@ const PRODUCTS: Product[] = [
     name: "SJA Baseball Cap",
     price: 500,
     description: "Navy Blue Baseball cap with embroidered SJA logo",
-    image: "/SJA Merch BB Cap.jpg"
+    image: "/SJA Merch BB Cap.jpg",
+    soldOut: true
   },
   {
     id: "running-cap",
