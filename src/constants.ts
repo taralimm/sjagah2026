@@ -69,10 +69,10 @@ export const PAYMENT_METHODS = {
 
 export const MERCH_PAYMENT_METHODS = {
   gcash: {
-    accountName: "Roda Manayaga",
-    mobileNumber: "0917 126 0302"
+    accountName: "Reina Marie Durban",
+    mobileNumber: "0917 710 5309"
   }
 };
 
 export const CONTACT_FACEBOOK = "https://www.facebook.com/SJAGAH2026/";
-export const REGISTRATION_URL = "https://form.jotform.com/260610707169052";
+export const REGISTRATION_URL = "https://sja-asj-alumni-homecoming-2026.ai.studio/";
