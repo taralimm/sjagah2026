@@ -319,21 +319,12 @@ export default function Merch() {
         
         {view === 'catalog' ? (
           <>
-            {/* Header Navigation & Open Cart Trigger */}
+            {/* Header Navigation */}
             <div className="flex justify-between items-center mb-12 border-b border-denim-900/5 pb-6">
               <Link to="/" className="inline-flex items-center space-x-2 text-denim-900/60 hover:text-denim-900 text-xs font-bold uppercase tracking-widest transition-colors">
                 <ArrowLeft size={16} />
                 <span>Return Home</span>
               </Link>
-              
-              <button 
-                type="button"
-                onClick={() => setIsCartOpen(true)}
-                className="inline-flex items-center space-x-2 bg-white hover:bg-denim-900 hover:text-white text-denim-900 border border-denim-900/10 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-all shadow-sm cursor-pointer"
-              >
-                <ShoppingBag size={16} className="text-gold" />
-                <span>View Cart ({cart.reduce((sum, item) => sum + item.quantity, 0)})</span>
-              </button>
             </div>
 
             <header className="mb-16 text-center">
@@ -349,7 +340,7 @@ export default function Merch() {
                 Homecoming <span className="font-serif italic text-gold font-normal">Memorabilia.</span>
               </h1>
               <p className="text-denim-900/60 max-w-2xl mx-auto font-light leading-relaxed">
-                Commemorative pre-order collection for the upcoming 2026 Grand Alumnae Homecoming event. <br />
+                Commemorative collection for the upcoming 2026 Grand Alumnae Homecoming event. Online pre-orders are now closed. Remaining stocks will be available for purchase during the event. <br />
                 <span className="text-[10px] text-denim-900/40 uppercase tracking-widest font-bold block mt-2">(Not affiliated with official SJA school stores • Organised by Alumni Host Batches)</span>
               </p>
             </header>
@@ -392,7 +383,7 @@ export default function Merch() {
                     {product.id === "monogram-shirt" && (
                       <div className="mb-6 text-left">
                         <label className="block text-[10px] font-bold text-gold uppercase tracking-[0.2em] mb-2.5 px-1 font-semibold">
-                          Select Size:
+                          Available Sizes:
                         </label>
                         <div className="flex flex-wrap gap-1.5 mb-2">
                           {SHIRT_SIZES.map(size => (
@@ -420,20 +411,19 @@ export default function Merch() {
                     )}
 
                     <button 
-                      onClick={() => !product.soldOut && addToCart(product, product.id === "monogram-shirt" ? selectedCatalogShirtSize : undefined)}
-                      disabled={product.soldOut}
+                      disabled={true}
                       className={`w-full py-4 rounded-full font-bold uppercase text-xs tracking-widest flex items-center justify-center space-x-2 transition-all ${
                         product.soldOut 
                           ? 'bg-denim-900/10 text-denim-900/40 cursor-not-allowed border border-denim-900/5' 
-                          : 'bg-denim-900 text-ivory hover:bg-gold cursor-pointer'
+                          : 'bg-gold/10 text-gold border border-gold/20 cursor-default'
                       }`}
                     >
                       {product.soldOut ? (
                         <span>Sold Out</span>
                       ) : (
                         <>
-                          <Plus size={16} />
-                          <span>Add to Cart</span>
+                          <ShoppingBag size={16} />
+                          <span>Purchase during the event</span>
                         </>
                       )}
                     </button>
